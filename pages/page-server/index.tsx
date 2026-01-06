@@ -1,6 +1,7 @@
 import { GetServerSideProps } from 'next';
 import PagesLayout from '@/components/PagesLayout';
 import { PromotionCard } from '@/components/PromotionCard';
+import { PageHeader } from '@/components/PageHeader';
 
 interface Promotion {
   promo_id: string;
@@ -18,13 +19,20 @@ export default function SSRPage({ data, error, generatedAt }: Props) {
   return (
     <PagesLayout>
       <div className="p-8 max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Pages SSR (getServerSideProps)</h1>
-
-        <div className="bg-yellow-50 p-4 rounded-lg mb-4 border border-yellow-200">
-          <strong>Generated on each request:</strong> {generatedAt}
-          <br />
-          <small>The page is rendered on every request at the server. HTML is generated dynamically each time, so both first and subsequent requests require a server round-trip. Best when data must always be fresh per request.</small>
-        </div>
+        <PageHeader
+          title="Pages Router SSR - Server-Side Rendering"
+          cachingStrategy="🔄 SSR with getServerSideProps - No Cache"
+          description={[
+            '<strong>Cache Strategy:</strong> <code class="bg-purple-100 px-1 rounded">getServerSideProps</code> - Server-side rendering on every request',
+            '<strong>Rendering Time:</strong> HTML generated fresh on each request, no caching',
+            '<strong>Every Request:</strong> Full server round-trip required - slower response time',
+            '<strong>Data Freshness:</strong> Always 100% up-to-date - real-time data on every page load',
+            '<strong>Performance:</strong> Slower than static/cached - server processes each request',
+            '<strong>Generated at:</strong> ' + generatedAt,
+            '<strong>Use Case:</strong> User-specific pages, dashboards, real-time data that cannot be cached'
+          ]}
+          variant="purple"
+        />
 
         {error && (
           <div className="text-red-600 bg-red-50 p-4 rounded-lg border border-red-200 mb-4">

@@ -17,11 +17,11 @@ export default function NavigationMenu({ currentPath }: Props) {
     // App Router ISR
     { path: '/app-isr', label: 'App Router (ISR)', icon: '📖' },
     // App Router SSG (generateStaticParams)
-    { path: '/app-ssg', label: 'App Router (Static)', icon: '🏠' },
+    { path: '/app-ssg', label: 'App Router (SSG)', icon: '🏠' },
     // Pages SSR (getServerSideProps)
-    { path: '/page-server', label: 'Pages Router (Server)', icon: '⚡' },
+    { path: '/page-server', label: 'Pages Router (SSR)', icon: '⚡' },
     // Pages SSG (getStaticProps) 
-    { path: '/page-static', label: 'Pages Router (Static)', icon: '📄' },
+    { path: '/page-static', label: 'Pages Router (ISR)', icon: '📄' },
   ];
 
   return (
