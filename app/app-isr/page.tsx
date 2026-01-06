@@ -1,18 +1,12 @@
-import { getPromotions } from '@/utils/directus';
-import { formatDate, renderValue } from '@/utils/formatters';
 import AppLayout from '@/components/AppLayout';
-import { PromotionCard } from '@/components/PromotionCard';
+import { ItemCard } from '@/components/ItemCard';
 import { PageHeader } from '@/components/PageHeader';
+import { getItems, type Item } from '@/utils/api';
 
-interface Promotion {
-  promo_id: string;
-  status: string;
-  [key: string]: any;
-}
 
 export default async function ReadablePage() {
   // Cache 60 seconds
-  const data = await getPromotions(60);
+  const data = await getItems(60);
   const generatedAt = new Date().toISOString();
 
   return (
@@ -28,29 +22,29 @@ export default async function ReadablePage() {
             '<strong>After 60 seconds:</strong> Next request triggers background regeneration while serving stale cache',
             '<strong>Data Freshness:</strong> Maximum 60 seconds stale - balances freshness with performance',
             '<strong>Performance:</strong> Fast after first request - cached response served immediately',
-            '<strong>Use Case:</strong> Ideal for semi-static content that updates periodically (news, product lists, promotions)',
+            '<strong>Use Case:</strong> Ideal for semi-static content that updates periodically (news, product lists)',
             '<strong>Generated at:</strong> ' + generatedAt
           ]}
           variant="blue"
         />
 
-      {data.error && (
+      {'error' in data && (
         <div className="text-red-600 bg-red-50 p-4 rounded border border-red-500 mb-4">
           <h2 className="text-xl font-semibold">Error:</h2>
           <p>{data.error}</p>
         </div>
       )}
 
-      {!data.error && data.data && (
+      {'data' in data && (
         <div>
           <div className="bg-white p-4 rounded mb-4 shadow">
             <strong>Total Items:</strong> {data.data.length}
           </div>
 
           <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(350px,1fr))]">
-            {data.data.map((item: Promotion, index: number) => (
-              <PromotionCard
-                key={item.promo_id || index}
+            {data.data.map((item: Item, index: number) => (
+              <ItemCard
+                key={item.id || index}
                 item={item}
                 index={index}
                 variant="detailed"
@@ -59,12 +53,6 @@ export default async function ReadablePage() {
               />
             ))}
           </div>
-        </div>
-      )}
-
-      {!data.error && !data.data && (
-        <div className="bg-white p-8 rounded-lg text-center">
-          <p>No data array found in response</p>
         </div>
       )}
       </div>

@@ -1,31 +1,31 @@
 import AppLayout from '@/components/AppLayout';
+import { ItemDetail } from '@/components/ItemDetail';
 import { PageHeader } from '@/components/PageHeader';
-import { PromotionDetail } from '@/components/PromotionDetail';
-import { getPromotionById, getPromotions } from '@/utils/directus';
+import { getItemById, getItems } from '@/utils/api';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  const data = await getPromotions(60);
+  const data = await getItems(60);
 
   // Handle case where data might have an error or no data array
-  if (!data || !data.data || data.error) {
-    console.error('Failed to generate static params:', data?.error || 'No data available');
+  if ('error' in data) {
+    console.error('Failed to generate static params:', data.error);
     return [];
   }
 
-  const params = data.data.map((item: { promo_id: string; }) => ({
-    slug: item.promo_id,
+  const params = data.data.map((item) => ({
+    slug: String(item.id),
   }));
 
   return params;
 }
 
-export default async function AppPromotionDetailPage({ params }: Props) {
+export default async function AppItemDetailPage({ params }: Props) {
   const { slug } = await params;
-  const result = await getPromotionById(slug, 60);
+  const result = await getItemById(slug, 60);
   const generatedAt = new Date().toISOString();
 
   return (
@@ -47,14 +47,14 @@ export default async function AppPromotionDetailPage({ params }: Props) {
           variant="green"
         />
 
-        {result.error && (
+        {'error' in result && (
           <div className="text-red-600 bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
             <h2 className="text-xl font-semibold">Error:</h2>
             <p>{result.error}</p>
           </div>
         )}
 
-        {result.promotion && <PromotionDetail promotion={result.promotion} />}
+        {'item' in result && <ItemDetail item={result.item} />}
       </div>
     </AppLayout>
   );

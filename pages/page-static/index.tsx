@@ -1,14 +1,9 @@
+import { ItemCard } from '@/components/ItemCard';
 import { PageHeader } from '@/components/PageHeader';
 import PagesLayout from '@/components/PagesLayout';
-import { PromotionCard } from '@/components/PromotionCard';
-import { getPromotions } from '@/utils/directus';
+import { getItems, type Item } from '@/utils/api';
 import { GetStaticProps } from 'next';
 
-interface Promotion {
-  promo_id: string;
-  status: string;
-  [key: string]: any;
-}
 
 interface Props {
   data: any;
@@ -49,9 +44,9 @@ export default function StaticPage({ data, error, generatedAt }: Props) {
             </div>
 
             <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {data.data.map((item: Promotion, index: number) => (
-                <PromotionCard
-                  key={item.promo_id || index}
+              {data.data.map((item: Item, index: number) => (
+                <ItemCard
+                  key={item.id || index}
                   item={item}
                   index={index}
                   variant="detailed"
@@ -69,21 +64,7 @@ export default function StaticPage({ data, error, generatedAt }: Props) {
 
 export const getStaticProps: GetStaticProps = async () => {
   try {
-    const directusHost = process.env.DIRECTUS_HOST;
-    const directusToken = process.env.DIRECTUS_TOKEN;
-
-    if (!directusHost || !directusToken) {
-      return {
-        props: {
-          data: null,
-          error: 'Configuration missing',
-          generatedAt: new Date().toISOString(),
-        },
-        revalidate: 60,
-      };
-    }
-
-    const data = await getPromotions(undefined);
+    const data = await getItems(undefined);
     return {
       props: {
         data,

@@ -1,22 +1,16 @@
-import { GetStaticProps, GetStaticPaths } from 'next';
-import PagesLayout from '@/components/PagesLayout';
-import { PromotionDetail } from '@/components/PromotionDetail';
-import { getPromotions, getPromotionById } from '@/utils/directus';
+import { ItemDetail } from '@/components/ItemDetail';
 import { PageHeader } from '@/components/PageHeader';
-
-interface Promotion {
-  promo_id: string;
-  status: string;
-  [key: string]: any;
-}
+import PagesLayout from '@/components/PagesLayout';
+import { getItemById, getItems, type Item } from '@/utils/api';
+import { GetStaticPaths, GetStaticProps } from 'next';
 
 interface Props {
-  promotion: Promotion | null;
+  item: Item | null;
   error?: string;
   generatedAt: string;
 }
 
-export default function StaticDetailPage({ promotion, error, generatedAt }: Props) {
+export default function StaticDetailPage({ item, error, generatedAt }: Props) {
   return (
     <PagesLayout>
       <div className="p-8 max-w-4xl mx-auto">
@@ -42,7 +36,7 @@ export default function StaticDetailPage({ promotion, error, generatedAt }: Prop
           </div>
         )}
 
-        {promotion && <PromotionDetail promotion={promotion} />}
+        {item && <ItemDetail item={item} />}
       </div>
     </PagesLayout>
   );
@@ -50,10 +44,18 @@ export default function StaticDetailPage({ promotion, error, generatedAt }: Prop
 
 export const getStaticPaths: GetStaticPaths = async () => {
   try {
-    const data = await getPromotions(60);
+    const data = await getItems(60);
 
-    const paths = (data.data || []).map((promotion: Promotion) => ({
-      params: { slug: String(promotion.promo_id) },
+    if ('error' in data) {
+      console.error('Error in getStaticPaths:', data.error);
+      return {
+        paths: [],
+        fallback: 'blocking',
+      };
+    }
+
+    const paths = data.data.map((item) => ({
+      params: { slug: String(item.id) },
     }));
 
     return {
@@ -72,13 +74,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   try {
     const slug = params?.slug as string;
-    const result = await getPromotionById(slug, 60);
+    const result = await getItemById(slug, 60);
 
-    if(result.error) {
+    if('error' in result) {
       return {
         props: {
-          promotion: null,
-          error: String(result.error),
+          item: null,
+          error: result.error,
           generatedAt: new Date().toISOString(),
         }
       }
@@ -86,14 +88,14 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
     return {
       props: {
-        promotion: result.promotion || null,
+        item: result.item,
         generatedAt: new Date().toISOString(),
       },
     };
   } catch (error) {
     return {
       props: {
-        promotion: null,
+        item: null,
         error: String(error),
         generatedAt: new Date().toISOString(),
       },

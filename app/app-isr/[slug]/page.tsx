@@ -1,21 +1,16 @@
-import { getPromotions, getPromotionById } from '@/utils/directus';
 import AppLayout from '@/components/AppLayout';
-import { PromotionDetail } from '@/components/PromotionDetail';
+import { ItemDetail } from '@/components/ItemDetail';
 import { PageHeader } from '@/components/PageHeader';
+import { getItemById } from '@/utils/api';
 
-interface Promotion {
-  promo_id: string;
-  status: string;
-  [key: string]: any;
-}
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export default async function AppPromotionDetailPage({ params }: Props) {
+export default async function AppItemDetailPage({ params }: Props) {
   const { slug } = await params;
-  const result = await getPromotionById(slug, 60);
+  const result = await getItemById(slug, 60);
   const generatedAt = new Date().toISOString();
 
   return (
@@ -37,14 +32,14 @@ export default async function AppPromotionDetailPage({ params }: Props) {
           variant="blue"
         />
 
-        {result.error && (
+        {'error' in result && (
           <div className="text-red-600 bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
             <h2 className="text-xl font-semibold">Error:</h2>
             <p>{result.error}</p>
           </div>
         )}
 
-        {result.promotion && <PromotionDetail promotion={result.promotion} />}
+        {'item' in result && <ItemDetail item={result.item} />}
       </div>
     </AppLayout>
   );

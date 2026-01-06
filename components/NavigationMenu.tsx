@@ -27,7 +27,7 @@ export default function NavigationMenu({ currentPath }: Props) {
   return (
     <nav className="w-64 bg-slate-800 text-white py-8 fixed h-screen overflow-y-auto">
       <div className="px-6 mb-8 pb-4 border-b border-slate-700">
-        <h2 className="text-xl font-semibold m-0">Directus POC</h2>
+        <h2 className="text-xl font-semibold m-0">Next.js Cache Demo</h2>
         <p className="mt-2 text-sm text-slate-400">
           Next.js Dual Router Demo
         </p>

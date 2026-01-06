@@ -1,11 +1,11 @@
 import { JsonViewer } from '@/components/JsonViewer';
-import { getPromotions } from '@/utils/directus';
+import { getItems, type Item } from '@/utils/api';
 import AppLayout from '@/components/AppLayout';
 import { PageHeader } from '@/components/PageHeader';
 
 export default async function Home() {
   // Cache: 'no-store
-  const data = await getPromotions(undefined);
+  const data = await getItems(undefined);
   const generatedAt = new Date().toISOString();
 
   return (
@@ -26,14 +26,14 @@ export default async function Home() {
           variant="blue"
         />
 
-        {data.error && (
+        {'error' in data && (
           <div className="text-red-600 bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
             <h2 className="text-xl font-semibold">Error:</h2>
             <p>{data.error}</p>
           </div>
         )}
 
-        {!data.error && (
+        {'data' in data && (
           <div>
             <h2 className="text-2xl font-semibold mb-4">API Response:</h2>
             <JsonViewer data={data} />
