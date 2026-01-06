@@ -1,9 +1,15 @@
-How to run
+## How to start
 ```
 1. start redis on your docker
 2. create .env.local at root project
-2. yarn build
-3. yarn start
+3. run yarn install
+```
+
+
+## How to run
+```
+1. run yarn build
+2. run yarn start
 ```
 
 `.env.local`
