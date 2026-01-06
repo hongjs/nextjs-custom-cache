@@ -2,6 +2,7 @@ import { getPromotions } from '@/utils/directus';
 import { formatDate, renderValue } from '@/utils/formatters';
 import AppLayout from '@/components/AppLayout';
 import { PromotionCard } from '@/components/PromotionCard';
+import { PageHeader } from '@/components/PageHeader';
 
 interface Promotion {
   promo_id: string;
@@ -12,19 +13,26 @@ interface Promotion {
 export default async function ReadablePage() {
   // Cache 60 seconds
   const data = await getPromotions(60);
+  const generatedAt = new Date().toISOString();
 
   return (
     <AppLayout>
       <div className="p-8 font-sans max-w-7xl mx-auto">
-        <h1 className="mb-6 text-3xl font-bold">App Router ISR (Incremental Static Regeneration)</h1>
-
-        <div className="bg-blue-50 p-4 rounded-lg mb-4 border border-blue-200">
-          <strong></strong>
-          <br />
-          <small className="block mt-1">
-           The page is generated on demand at runtime. The first request triggers rendering on the server, then the result is cached and revalidated according to configured rules. Subsequent requests are fast because they use the cached version until revalidation.
-          </small>
-        </div>
+        <PageHeader
+          title="App Router ISR - Incremental Static Regeneration"
+          cachingStrategy="⏱️ ISR with revalidate: 60 seconds"
+          description={[
+            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">next: { revalidate: 60 }</code> - Time-based revalidation',
+            '<strong>First Request:</strong> Generated on-demand, rendered on server, then cached',
+            '<strong>Subsequent Requests:</strong> Served from cache instantly (within 60s window)',
+            '<strong>After 60 seconds:</strong> Next request triggers background regeneration while serving stale cache',
+            '<strong>Data Freshness:</strong> Maximum 60 seconds stale - balances freshness with performance',
+            '<strong>Performance:</strong> Fast after first request - cached response served immediately',
+            '<strong>Use Case:</strong> Ideal for semi-static content that updates periodically (news, product lists, promotions)',
+            '<strong>Generated at:</strong> ' + generatedAt
+          ]}
+          variant="blue"
+        />
 
       {data.error && (
         <div className="text-red-600 bg-red-50 p-4 rounded border border-red-500 mb-4">

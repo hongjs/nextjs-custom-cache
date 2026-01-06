@@ -2,6 +2,7 @@ import { GetStaticProps, GetStaticPaths } from 'next';
 import PagesLayout from '@/components/PagesLayout';
 import { PromotionDetail } from '@/components/PromotionDetail';
 import { getPromotions, getPromotionById } from '@/utils/directus';
+import { PageHeader } from '@/components/PageHeader';
 
 interface Promotion {
   promo_id: string;
@@ -19,13 +20,20 @@ export default function StaticDetailPage({ promotion, error, generatedAt }: Prop
   return (
     <PagesLayout>
       <div className="p-8 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Promotion Detail (ISR)</h1>
-
-        <div className="bg-blue-50 p-4 rounded-lg mb-4 border border-blue-200">
-          <strong>Generated at build time:</strong> {generatedAt}
-          <br />
-          <small>The page is generated at build time into static HTML. Because it’s fully pre-rendered, the first and subsequent requests are served instantly from the CDN/cache. Best for content that rarely changes.</small>
-        </div>
+        <PageHeader
+          title="Pages Router ISR - Incremental Static Regeneration"
+          cachingStrategy="⏱️ ISR with getStaticPaths + fallback: 'blocking'"
+          description={[
+            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">getStaticProps + getStaticPaths</code> - Hybrid static/on-demand generation',
+            '<strong>Build Time:</strong> Predefined paths generated during build via <code class="bg-blue-100 px-1 rounded">getStaticPaths</code>',
+            '<strong>Unknown Routes:</strong> <code class="bg-blue-100 px-1 rounded">fallback: \'blocking\'</code> - New slugs generated on-demand, then cached',
+            '<strong>First Visit (New Slug):</strong> Rendered on server, then cached permanently',
+            '<strong>Subsequent Visits:</strong> Served instantly from cache',
+            '<strong>Generated at:</strong> ' + generatedAt,
+            '<strong>Use Case:</strong> Best of both worlds - fast for known routes, scalable for new ones (e-commerce products)'
+          ]}
+          variant="blue"
+        />
 
         {error && (
           <div className="text-red-600 bg-red-50 p-4 rounded-lg border border-red-200 mb-4">

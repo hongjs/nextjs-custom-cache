@@ -2,6 +2,7 @@ import { getPromotions } from '@/utils/directus';
 import { formatDate, renderValue } from '@/utils/formatters';
 import AppLayout from '@/components/AppLayout';
 import { PromotionCard } from '@/components/PromotionCard';
+import { PageHeader } from '@/components/PageHeader';
 
 interface Promotion {
   promo_id: string;
@@ -11,7 +12,7 @@ interface Promotion {
 
 export async function generateStaticParams() {
   const data = await getPromotions(60);
- 
+
   return data.map((item: { promo_id: string; }) => ({
     slug: item.promo_id,
   }))
@@ -20,19 +21,26 @@ export async function generateStaticParams() {
 export default async function ReadablePage() {
   // Cache 60 seconds
   const data = await getPromotions(60);
+  const generatedAt = new Date().toISOString();
 
   return (
     <AppLayout>
       <div className="p-8 font-sans max-w-7xl mx-auto">
-        <h1 className="mb-6 text-3xl font-bold">App Router SSG (generateStaticParams + static rendering)</h1>
-
-        <div className="bg-blue-50 p-4 rounded-lg mb-4 border border-blue-200">
-          <strong></strong>
-          <br />
-          <small className="block mt-1">
-            The page is statically generated during build, including for defined dynamic routes. Because it’s fully pre-rendered, both first and later requests are instant. Ideal for static or mostly-static content with known paths at build time.
-          </small>
-        </div>
+        <PageHeader
+          title="App Router SSG - Static Site Generation"
+          cachingStrategy="🏗️ SSG with generateStaticParams - Built at Build Time"
+          description={[
+            '<strong>Cache Strategy:</strong> <code class="bg-green-100 px-1 rounded">Static Generation</code> - Fully pre-rendered at build time',
+            '<strong>Build Time:</strong> Page is generated once during <code class="bg-green-100 px-1 rounded">npm run build</code>',
+            '<strong>All Requests:</strong> Served instantly from pre-built HTML - no server processing',
+            '<strong>Data Freshness:</strong> Static until next build - data snapshot from build time',
+            '<strong>Performance:</strong> Fastest possible - pure static HTML served by CDN',
+            '<strong>Deployment:</strong> Requires rebuild and redeploy to update content',
+            '<strong>Use Case:</strong> Best for truly static content (documentation, marketing pages, archived content)',
+            '<strong>Generated at:</strong> ' + generatedAt
+          ]}
+          variant="green"
+        />
 
       {data.error && (
         <div className="text-red-600 bg-red-50 p-4 rounded border border-red-500 mb-4">

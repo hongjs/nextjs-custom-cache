@@ -1,6 +1,7 @@
 import { GetStaticProps } from 'next';
 import PagesLayout from '@/components/PagesLayout';
 import { PromotionCard } from '@/components/PromotionCard';
+import { PageHeader } from '@/components/PageHeader';
 
 interface Promotion {
   promo_id: string;
@@ -18,13 +19,20 @@ export default function StaticPage({ data, error, generatedAt }: Props) {
   return (
     <PagesLayout>
       <div className="p-8 max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Pages ISR (getStaticProps)</h1>
-
-        <div className="bg-blue-50 p-4 rounded-lg mb-4 border border-blue-200">
-          <strong>Generated at build time:</strong> {generatedAt}
-          <br />
-          <small>The page is generated at build time into static HTML. Because it’s fully pre-rendered, the first and subsequent requests are served instantly from the CDN/cache. Best for content that rarely changes.</small>
-        </div>
+        <PageHeader
+          title="Pages Router ISR - Incremental Static Regeneration"
+          cachingStrategy="⏱️ ISR with getStaticProps + revalidate: 60"
+          description={[
+            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">getStaticProps + revalidate: 60</code> - Build-time generation with time-based revalidation',
+            '<strong>Build Time:</strong> Initially generated during <code class="bg-blue-100 px-1 rounded">npm run build</code>',
+            '<strong>First Request:</strong> Served instantly from pre-built static HTML',
+            '<strong>After 60 seconds:</strong> Next request triggers background regeneration, stale cache served',
+            '<strong>Data Freshness:</strong> Maximum 60 seconds stale - automatic background updates',
+            '<strong>Generated at:</strong> ' + generatedAt,
+            '<strong>Use Case:</strong> Content that updates periodically - news sites, product catalogs, blog lists'
+          ]}
+          variant="blue"
+        />
 
         {error && (
           <div className="text-red-600 bg-red-50 p-4 rounded-lg border border-red-200 mb-4">

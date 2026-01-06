@@ -1,27 +1,30 @@
 import { JsonViewer } from '@/components/JsonViewer';
 import { getPromotions } from '@/utils/directus';
 import AppLayout from '@/components/AppLayout';
+import { PageHeader } from '@/components/PageHeader';
 
 export default async function Home() {
   // Cache: 'no-store
   const data = await getPromotions(undefined);
+  const generatedAt = new Date().toISOString();
 
   return (
     <AppLayout>
       <div className="p-8 font-sans">
-        <h1 className="mb-6 text-3xl font-bold">Directus API POC (App Router)</h1>
-
-        <div className="bg-blue-50 p-4 rounded-lg mb-4 border border-blue-200">
-          <strong>🚀 App Router with ISR (React Server Component)</strong>
-          <br />
-          <small className="block mt-1">
-            Static rendering with <code className="bg-blue-100 px-1 rounded">next: &#123; revalidate: 60 &#125;</code> -
-            Cached and revalidated every 60 seconds (App Router ISR)
-          </small>
-          <small className="block mt-1 text-gray-600">
-            ℹ️ Combines static generation benefits with data freshness - built at request time, then cached
-          </small>
-        </div>
+        <PageHeader
+          title="Dynamic Rendering (No Cache)"
+          cachingStrategy="🔄 Dynamic Rendering with cache: 'no-store'"
+          description={[
+            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">cache: \'no-store\'</code> - No caching at all',
+            '<strong>Rendering Time:</strong> Page is rendered fresh on every request',
+            '<strong>Data Freshness:</strong> Always up-to-date - fetches latest data on each visit',
+            '<strong>Performance:</strong> Slower response time as server processes each request',
+            '<strong>Use Case:</strong> Perfect for real-time data, user-specific content, or frequently changing information',
+            '<strong>Server Load:</strong> Higher server load as every request triggers a new render',
+            '<strong>Generated at:</strong> ' + generatedAt
+          ]}
+          variant="blue"
+        />
 
         {data.error && (
           <div className="text-red-600 bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
