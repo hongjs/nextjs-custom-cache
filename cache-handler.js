@@ -1,4 +1,5 @@
 const { CacheHandler } = require("next/dist/server/lib/incremental-cache");
+const Redis = require('ioredis');
 
 let redisClient = null;
 let isRedisAvailable = false;
