@@ -1,3 +1,11 @@
+How to run
+```
+1. start redis on your docker
+2. create .env.local at root project
+2. yarn build
+3. yarn start
+```
+
 `.env.local`
 ```powershell
 DIRECTUS_HOST=http://directus-host
