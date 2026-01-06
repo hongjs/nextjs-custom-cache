@@ -25,7 +25,7 @@ export async function generateStaticParams() {
 
 export default async function AppPromotionDetailPage({ params }: Props) {
   const { slug } = await params;
-  const result = await getPromotionById(slug, undefined);
+  const result = await getPromotionById(slug, 60);
   const generatedAt = new Date().toISOString();
 
   return (

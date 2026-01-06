@@ -73,6 +73,20 @@ async function disconnectRedis() {
   }
 }
 
+async function waitUntilReady(timeoutMs = 5000) {
+  const start = Date.now();
+
+  while (!isRedisConnected()) {
+    console.log('waitUntilReady...')
+    if (Date.now() - start > timeoutMs) {
+      console.warn('[Redis] waitUntilReady timeout, falling back to memory cache');
+      return false;
+    }
+    await new Promise((r) => setTimeout(r, 100));
+  }
+
+  return true;
+}
 
 class RedisCacheHandler extends CacheHandler {
   constructor(options) {
@@ -84,13 +98,17 @@ class RedisCacheHandler extends CacheHandler {
 
   async get(key, options = {}) {
     // Try Redis first
+    await waitUntilReady();
     if (this.redis && isRedisConnected()) {
       try {
-        const cached = await this.redis.get(`nextjs:${key}`);
+        
+        const cached = await this.redis.get(`nextjs:${key}}`);
         if (cached) {
+          console.log(`[Redis] cache HIT, key=${key}, option=${JSON.stringify(options)}}`)
           return JSON.parse(cached);
         }
-        return null;
+        console.log(`[Redis] cache MISS, key=${key}, use memCache`)
+        return this.memStore.get(key) ?? null;
       } catch (error) {
         console.error("[Cache] Redis get error:", error.message);
       }
@@ -102,6 +120,7 @@ class RedisCacheHandler extends CacheHandler {
 
   async set(key, data, ctx) {
     // Try Redis first
+    await waitUntilReady();
     if (this.redis && isRedisConnected()) {
       try {
         const ttl = (ctx?.revalidate && typeof ctx.revalidate === "number") ? ctx.revalidate : 3600;
