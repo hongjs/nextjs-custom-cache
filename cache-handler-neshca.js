@@ -8,7 +8,7 @@ const { PHASE_PRODUCTION_BUILD } = require("next/constants");
 CacheHandler.onCreation(async () => {
   let client;
   // use redis client during build could cause issue https://github.com/caching-tools/next-shared-cache/issues/284#issuecomment-1919145094
-  if (PHASE_PRODUCTION_BUILD !== process.env.NEXT_PHASE || true) {
+  if (PHASE_PRODUCTION_BUILD !== process.env.NEXT_PHASE) {
     try {
       // Create a Redis client.
       client = createClient({
