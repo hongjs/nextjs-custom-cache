@@ -14,15 +14,15 @@ export async function getPromotions(revalidate: number | undefined) {
         'Authorization': `Bearer ${directusToken}`,
       },
       signal: AbortSignal.timeout(30000), // 30 second timeout
-      next: { revalidate: 60 }
+      // next: { revalidate: 60 }
     }
 
-    // if(revalidate){
-    //   config['next'] = { revalidate: revalidate }
-    // }
-    // else {
-    //   config['cache'] = 'no-store'
-    // }
+    if(revalidate){
+      config['next'] = { revalidate: revalidate }
+    }
+    else {
+      config['cache'] = 'no-store'
+    }
 
     console.log(`[${new Date().toISOString()}] Fetching promotions from ${directusHost}...`);
     const response = await fetch(url, config);
@@ -61,18 +61,19 @@ export async function getPromotionById(id: string, revalidate: number | undefine
         'Authorization': `Bearer ${directusToken}`,
       },
       signal: AbortSignal.timeout(30000), // 30 second timeout
-      next: { revalidate: 60 }
+      // next: { revalidate: 60 }
     }
-    // if(revalidate){
-    //   config['next'] = { revalidate: revalidate }
-    // }
-    // else {
-    //   config['cache'] = 'no-store'
-    // }
+    if(revalidate){
+      config['next'] = { revalidate: revalidate }
+    }
+    else {
+      config['cache'] = 'no-store'
+    }
 
     console.log(`[${new Date().toISOString()}] Fetching promotion ${id}...`);
     const response = await fetch(url, config);
 
+    console.log(JSON.stringify(response.headers));
     if (!response.ok) {
       console.error(`[getPromotionById] HTTP ${response.status} for id=${id}`);
       return { error: `Promotion not found (${response.status})` };
