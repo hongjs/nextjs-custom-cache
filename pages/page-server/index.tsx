@@ -1,7 +1,8 @@
-import { GetServerSideProps } from 'next';
+import { PageHeader } from '@/components/PageHeader';
 import PagesLayout from '@/components/PagesLayout';
 import { PromotionCard } from '@/components/PromotionCard';
-import { PageHeader } from '@/components/PageHeader';
+import { getPromotions } from '@/utils/directus';
+import { GetServerSideProps } from 'next';
 
 interface Promotion {
   promo_id: string;
@@ -81,15 +82,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
       };
     }
 
-    const url = `${directusHost}/promotions?limit=10&filter[status][_eq]=draft`;
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${directusToken}`,
-      },
-    });
-
-    const data = await response.json();
-
+    const data = await getPromotions(undefined);
     return {
       props: {
         data,

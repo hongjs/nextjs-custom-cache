@@ -10,14 +10,6 @@ interface Promotion {
   [key: string]: any;
 }
 
-export async function generateStaticParams() {
-  const data = await getPromotions(60);
-
-  return data.map((item: { promo_id: string; }) => ({
-    slug: item.promo_id,
-  }))
-}
-
 export default async function ReadablePage() {
   // Cache 60 seconds
   const data = await getPromotions(60);
@@ -27,17 +19,17 @@ export default async function ReadablePage() {
     <AppLayout>
       <div className="p-8 font-sans max-w-7xl mx-auto">
         <PageHeader
-          title="App Router SSG - Static Site Generation"
-          cachingStrategy="🏗️ SSG with generateStaticParams - Built at Build Time"
+          title="App Router SSG List - Static Site Generation"
+          cachingStrategy="🏗️ SSG - Static List Page Built at Build Time"
           description={[
-            '<strong>Cache Strategy:</strong> <code class="bg-green-100 px-1 rounded">Static Generation</code> - Fully pre-rendered at build time',
-            '<strong>Build Time:</strong> Page is generated once during <code class="bg-green-100 px-1 rounded">npm run build</code>',
-            '<strong>All Requests:</strong> Served instantly from pre-built HTML - no server processing',
-            '<strong>Data Freshness:</strong> Static until next build - data snapshot from build time',
-            '<strong>Performance:</strong> Fastest possible - pure static HTML served by CDN',
-            '<strong>Deployment:</strong> Requires rebuild and redeploy to update content',
-            '<strong>Use Case:</strong> Best for truly static content (documentation, marketing pages, archived content)',
-            '<strong>Generated at:</strong> ' + generatedAt
+            '<strong>Cache Strategy:</strong> <code class="bg-green-100 px-1 rounded">Static Generation</code> - Pre-rendered once at build time',
+            '<strong>Build Time:</strong> Page generated during <code class="bg-green-100 px-1 rounded">npm run build</code> with data fetched from API',
+            '<strong>Runtime:</strong> Served as pure static HTML - no API calls after build',
+            '<strong>Data Freshness:</strong> Frozen at build time - requires rebuild to update',
+            '<strong>Performance:</strong> Instant load - pure static HTML served by CDN',
+            '<strong>Updates:</strong> Content only changes after <code class="bg-green-100 px-1 rounded">npm run build</code> and redeployment',
+            '<strong>Use Case:</strong> Content that rarely changes (marketing pages, archives, documentation)',
+            '<strong>Generated at:</strong> ' + generatedAt + ' (frozen until next build)'
           ]}
           variant="green"
         />
