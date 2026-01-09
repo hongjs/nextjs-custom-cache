@@ -5,6 +5,8 @@ A comprehensive demonstration of Next.js caching strategies using custom cache h
 ## Overview
 
 This project showcases how to implement and configure custom cache handlers in Next.js to enable distributed caching with Redis. It demonstrates various caching strategies including SSG (Static Site Generation), ISR (Incremental Static Regeneration), SSR (Server-Side Rendering), and dynamic rendering with real-world examples using JSONPlaceholder API as a data source.
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/d7e03014-66f1-4d93-b7b8-1439840cd68c" />
+
 
 ## Features
 
