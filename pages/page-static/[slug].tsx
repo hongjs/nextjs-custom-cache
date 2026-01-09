@@ -2,12 +2,14 @@ import { ItemDetail } from '@/components/ItemDetail';
 import { PageHeader } from '@/components/PageHeader';
 import PagesLayout from '@/components/PagesLayout';
 import { getItemById, getItems, type Item } from '@/utils/api';
+import { getPodHostname } from '@/utils/hostname';
 import { GetStaticPaths, GetStaticProps } from 'next';
 
 interface Props {
   item: Item | null;
   error?: string;
   generatedAt: string;
+  hostname: string;
 }
 
 export default function StaticDetailPage({ item, error, generatedAt }: Props) {
@@ -72,6 +74,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const hostname = getPodHostname();
+
   try {
     const slug = params?.slug as string;
     const result = await getItemById(slug, 60);
@@ -82,6 +86,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           item: null,
           error: result.error,
           generatedAt: new Date().toISOString(),
+          hostname,
         }
       }
     }
@@ -90,6 +95,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       props: {
         item: result.item,
         generatedAt: new Date().toISOString(),
+        hostname,
       },
     };
   } catch (error) {
@@ -98,6 +104,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         item: null,
         error: String(error),
         generatedAt: new Date().toISOString(),
+        hostname,
       },
     };
   }

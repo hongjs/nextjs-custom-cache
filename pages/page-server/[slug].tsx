@@ -2,6 +2,7 @@ import { ItemDetail } from '@/components/ItemDetail';
 import { PageHeader } from '@/components/PageHeader';
 import PagesLayout from '@/components/PagesLayout';
 import { getItemById, Item } from '@/utils/api';
+import { getPodHostname } from '@/utils/hostname';
 import { GetServerSideProps } from 'next';
 
 
@@ -9,6 +10,7 @@ interface Props {
   item: Item | null;
   error?: string;
   generatedAt: string;
+  hostname: string;
 }
 
 export default function SSRDetailPage({ item, error, generatedAt }: Props) {
@@ -44,6 +46,8 @@ export default function SSRDetailPage({ item, error, generatedAt }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const hostname = getPodHostname();
+
   try {
     const slug = params?.slug as string;
     const result = await getItemById(slug, 60);
@@ -54,6 +58,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
           item: null,
           error: result.error,
           generatedAt: new Date().toISOString(),
+          hostname,
         }
       }
     }
@@ -62,6 +67,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       props: {
         item: result.item,
         generatedAt: new Date().toISOString(),
+        hostname,
       },
     };
   } catch (error) {
@@ -70,6 +76,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
         item: null,
         error: String(error),
         generatedAt: new Date().toISOString(),
+        hostname,
       },
     };
   }

@@ -2,6 +2,7 @@ import { ItemCard } from '@/components/ItemCard';
 import { PageHeader } from '@/components/PageHeader';
 import PagesLayout from '@/components/PagesLayout';
 import { getItems, type Item } from '@/utils/api';
+import { getPodHostname } from '@/utils/hostname';
 import { GetStaticProps } from 'next';
 
 
@@ -9,6 +10,7 @@ interface Props {
   data: any;
   error?: string;
   generatedAt: string;
+  hostname: string;
 }
 
 export default function StaticPage({ data, error, generatedAt }: Props) {
@@ -63,12 +65,15 @@ export default function StaticPage({ data, error, generatedAt }: Props) {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
+  const hostname = getPodHostname();
+
   try {
     const data = await getItems(undefined);
     return {
       props: {
         data,
         generatedAt: new Date().toISOString(),
+        hostname,
       },
       revalidate: 60,
     };
@@ -78,6 +83,7 @@ export const getStaticProps: GetStaticProps = async () => {
         data: null,
         error: String(error),
         generatedAt: new Date().toISOString(),
+        hostname,
       },
       revalidate: 60,
     };
