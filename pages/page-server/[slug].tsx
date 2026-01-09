@@ -50,7 +50,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
   try {
     const slug = params?.slug as string;
-    const result = await getItemById(slug, 60);
+    const result = await getItemById(slug, undefined);
 
     if('error' in result) {
       return {

@@ -8,7 +8,7 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const data = await getItems(60);
+  const data = await getItems(300);
 
   // Handle case where data might have an error or no data array
   if ('error' in data) {
@@ -25,7 +25,7 @@ export async function generateStaticParams() {
 
 export default async function AppItemDetailPage({ params }: Props) {
   const { slug } = await params;
-  const result = await getItemById(slug, 60);
+  const result = await getItemById(slug, undefined);
   const generatedAt = new Date().toISOString();
 
   return (

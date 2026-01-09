@@ -46,7 +46,7 @@ export default function StaticDetailPage({ item, error, generatedAt }: Props) {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   try {
-    const data = await getItems(60);
+    const data = await getItems(300);
 
     if ('error' in data) {
       console.error('Error in getStaticPaths:', data.error);
@@ -78,7 +78,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   try {
     const slug = params?.slug as string;
-    const result = await getItemById(slug, 60);
+    const result = await getItemById(slug, undefined);
 
     if('error' in result) {
       return {
@@ -97,6 +97,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         generatedAt: new Date().toISOString(),
         hostname,
       },
+      revalidate: 300,
     };
   } catch (error) {
     return {

@@ -101,10 +101,10 @@ class RedisCacheHandler extends CacheHandler {
     await waitUntilReady();
     if (this.redis && isRedisConnected()) {
       try {
-        
-        const cached = await this.redis.get(`nextjs:${key}}`);
+
+        const cached = await this.redis.get(`nextjs:${key}`);
         if (cached) {
-          console.log(`[Redis] cache HIT, key=${key}, option=${JSON.stringify(options)}}`)
+          console.log(`[Redis] cache HIT, key=${key}, option=${JSON.stringify(options)}`)
           return JSON.parse(cached);
         }
         console.log(`[Redis] cache MISS, key=${key}, use memCache`)

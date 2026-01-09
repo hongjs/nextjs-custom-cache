@@ -19,9 +19,9 @@ export default function StaticPage({ data, error, generatedAt }: Props) {
       <div className="p-8 max-w-7xl mx-auto">
         <PageHeader
           title="Pages Router ISR - Incremental Static Regeneration"
-          cachingStrategy="⏱️ ISR with getStaticProps + revalidate: 60"
+          cachingStrategy="⏱️ ISR with getStaticProps + revalidate: 300"
           description={[
-            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">getStaticProps + revalidate: 60</code> - Build-time generation with time-based revalidation',
+            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">getStaticProps + revalidate: 300</code> - Build-time generation with time-based revalidation',
             '<strong>Build Time:</strong> Initially generated during <code class="bg-blue-100 px-1 rounded">npm run build</code>',
             '<strong>First Request:</strong> Served instantly from pre-built static HTML',
             '<strong>After 60 seconds:</strong> Next request triggers background regeneration, stale cache served',
@@ -75,7 +75,7 @@ export const getStaticProps: GetStaticProps = async () => {
         generatedAt: new Date().toISOString(),
         hostname,
       },
-      revalidate: 60,
+      revalidate: 300,
     };
   } catch (error) {
     return {
@@ -85,7 +85,7 @@ export const getStaticProps: GetStaticProps = async () => {
         generatedAt: new Date().toISOString(),
         hostname,
       },
-      revalidate: 60,
+      revalidate: 300,
     };
   }
 };

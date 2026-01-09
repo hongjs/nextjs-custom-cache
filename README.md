@@ -33,7 +33,7 @@ A production-ready Next.js application demonstrating distributed caching with Re
    - Perfect for real-time, user-specific content
    - Example: `/` (Home page showing JSON data)
 
-2. **ISR (Incremental Static Regeneration)** - `revalidate: 60`
+2. **ISR (Incremental Static Regeneration)** - `revalidate: 300`
    - Time-based revalidation (60 seconds)
    - Balances freshness with performance
    - Stale-while-revalidate pattern
@@ -130,7 +130,7 @@ The application includes multiple examples demonstrating different caching strat
 
 **App Router (Next.js 13+):**
 - `/` - Dynamic rendering (no cache) with JSON viewer
-- `/app-isr` - ISR list page (revalidate: 60s)
+- `/app-isr` - ISR list page (revalidate: 300s)
 - `/app-isr/1` - ISR detail page for photo #1
 - `/app-ssg` - SSG list page (built at build time)
 - `/app-ssg/1` - SSG detail page with `generateStaticParams`

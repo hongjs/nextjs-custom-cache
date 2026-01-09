@@ -3,10 +3,10 @@ import { ItemCard } from '@/components/ItemCard';
 import { PageHeader } from '@/components/PageHeader';
 import { getItems, type Item } from '@/utils/api';
 
+export const revalidate = 300;
 
 export default async function ReadablePage() {
-  // Cache 60 seconds
-  const data = await getItems(60);
+  const data = await getItems(undefined);
   const generatedAt = new Date().toISOString();
 
   return (
@@ -14,9 +14,9 @@ export default async function ReadablePage() {
       <div className="p-8 font-sans max-w-7xl mx-auto">
         <PageHeader
           title="App Router ISR - Incremental Static Regeneration"
-          cachingStrategy="⏱️ ISR with revalidate: 60 seconds"
+          cachingStrategy="⏱️ ISR with revalidate: 300 seconds"
           description={[
-            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">next: { revalidate: 60 }</code> - Time-based revalidation',
+            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">next: { revalidate: 300 }</code> - Time-based revalidation',
             '<strong>First Request:</strong> Generated on-demand, rendered on server, then cached',
             '<strong>Subsequent Requests:</strong> Served from cache instantly (within 60s window)',
             '<strong>After 60 seconds:</strong> Next request triggers background regeneration while serving stale cache',
