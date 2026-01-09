@@ -57,15 +57,26 @@ export async function getItems(revalidate: number | undefined): Promise<ItemsRes
       signal: AbortSignal.timeout(30000), // 30 second timeout
     }
 
+    let cacheStrategy = '';
     if(revalidate){
       config['next'] = { revalidate: revalidate }
+      cacheStrategy = `revalidate: ${revalidate}s`;
     }
     else {
       config['cache'] = 'no-store'
+      cacheStrategy = 'no-store (no cache)';
     }
 
-    console.log(`[${new Date().toISOString()}] Fetching photos from JSONPlaceholder...`);
+    const startTime = Date.now();
+    console.log(`[${new Date().toISOString()}] Fetching photos from JSONPlaceholder... [${cacheStrategy}]`);
     const response = await fetch(url, config);
+    const fetchTime = Date.now() - startTime;
+
+    // Check Next.js cache status from headers
+    const cacheStatus = response.headers.get('x-nextjs-cache') || 'UNKNOWN';
+    const age = response.headers.get('age');
+
+    console.log(`[${new Date().toISOString()}] Cache Status: ${cacheStatus} | Fetch Time: ${fetchTime}ms${age ? ` | Age: ${age}s` : ''}`);
 
     if (!response.ok) {
       console.error(`[getItems] HTTP ${response.status}: ${response.statusText}`);
@@ -100,15 +111,27 @@ export async function getItemById(id: string, revalidate: number | undefined): P
     const config: Partial<RequestInit> = {
       signal: AbortSignal.timeout(30000), // 30 second timeout
     }
+
+    let cacheStrategy = '';
     if(revalidate){
       config['next'] = { revalidate: revalidate }
+      cacheStrategy = `revalidate: ${revalidate}s`;
     }
     else {
       config['cache'] = 'no-store'
+      cacheStrategy = 'no-store (no cache)';
     }
 
-    console.log(`[${new Date().toISOString()}] Fetching photo ${id}...`);
+    const startTime = Date.now();
+    console.log(`[${new Date().toISOString()}] Fetching photo ${id}... [${cacheStrategy}]`);
     const response = await fetch(url, config);
+    const fetchTime = Date.now() - startTime;
+
+    // Check Next.js cache status from headers
+    const cacheStatus = response.headers.get('x-nextjs-cache') || 'UNKNOWN';
+    const age = response.headers.get('age');
+
+    console.log(`[${new Date().toISOString()}] Cache Status: ${cacheStatus} | Fetch Time: ${fetchTime}ms${age ? ` | Age: ${age}s` : ''}`);
 
     if (!response.ok) {
       console.error(`[getItemById] HTTP ${response.status} for id=${id}`);

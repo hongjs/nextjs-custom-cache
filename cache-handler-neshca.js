@@ -128,19 +128,16 @@ CacheHandler.onCreation(async () => {
     } : undefined,
   };
 
-  if(!redisHandler) {
+  // Use ONLY ONE handler at a time: Redis if available, otherwise LRU
+  let handlers;
+  if (redisHandler) {
+    handlers = [redisHandler];
+    console.info("Cache handler configured: Redis Handler (primary)");
+  } else {
+    handlers = [LRUHandler];
     console.warn("Falling back to LRU handler because Redis client is not available.");
+    console.info("Cache handler configured: LRU Handler (in-memory fallback)");
   }
-
-  // Filter out null handlers to prevent cache errors when Redis is unavailable
-  const handlers = [redisHandler, LRUHandler].filter(Boolean);
-
-  // Log which handlers are configured
-  console.info("Cache handlers configured:", handlers.map((h, i) => {
-    if (h === redisHandler) return `[${i}] Redis Handler`;
-    if (h === LRUHandler) return `[${i}] LRU Handler (in-memory)`;
-    return `[${i}] Unknown Handler`;
-  }).join(", "));
 
   return {
     handlers,
