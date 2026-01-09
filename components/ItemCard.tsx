@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
 import type { Item } from '@/utils/api';
+import { ReactNode } from 'react';
 
 interface ItemCardProps {
   item: Item;
@@ -25,7 +25,7 @@ export function ItemCard({
       {item.thumbnailUrl && variant === 'detailed' && (
         <div className="mb-4">
           <img
-            src={item.thumbnailUrl}
+            src={'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d'}
             alt={item.title || `Photo ${item.id}`}
             className="w-full h-40 object-cover rounded"
           />

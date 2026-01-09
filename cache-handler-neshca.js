@@ -33,26 +33,28 @@ CacheHandler.onCreation(async () => {
     try {
       console.info("Connecting Redis client...");
 
-      // Wait for the client to connect.
-      // Caveat: This will block the server from starting until the client is connected.
-      // And there is no timeout. Make your own timeout if needed.
-      await client.connect();
+      // Wait for the client to connect with a timeout
+      const connectionTimeout = 5000; // 5 seconds timeout
+      await Promise.race([
+        client.connect(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Redis connection timeout")), connectionTimeout)
+        ),
+      ]);
       console.info("Redis client connected.");
     } catch (error) {
-      console.warn("Failed to connect Redis client:", error);
+      console.warn("Failed to connect Redis client:", error.message);
 
       console.warn("Disconnecting the Redis client...");
       // Try to disconnect the client to stop it from reconnecting.
-      client
-        .disconnect()
-        .then(() => {
-          console.info("Redis client disconnected.");
-        })
-        .catch(() => {
-          console.warn(
-            "Failed to quit the Redis client after failing to connect.",
-          );
-        });
+      try {
+        await client.disconnect();
+        console.info("Redis client disconnected.");
+      } catch (disconnectError) {
+        console.warn("Failed to disconnect the Redis client after failing to connect.");
+      }
+      // Set client to null so we don't try to use it
+      client = null;
     }
   }
 
@@ -60,21 +62,88 @@ CacheHandler.onCreation(async () => {
   let redisHandler = null;
   if (client?.isReady) {
     // Create the `redis-stack` Handler if the client is available and connected.
-    redisHandler = await createRedisHandler({
+    const baseRedisHandler = await createRedisHandler({
       client,
       keyPrefix: "prefix:",
       timeoutMs: 1000,
     });
+
+    // Wrap Redis handler with logging
+    redisHandler = {
+      name: baseRedisHandler.name,
+      get: async (key) => {
+        const result = await baseRedisHandler.get(key);
+        if (result) {
+          console.log(`[Cache] Redis HIT: ${key}`);
+        } else {
+          console.log(`[Cache] Redis MISS: ${key}`);
+        }
+        return result;
+      },
+      set: async (key, value) => {
+        console.log(`[Cache] Redis SET: ${key}`);
+        return baseRedisHandler.set(key, value);
+      },
+      delete: async (key) => {
+        console.log(`[Cache] Redis DELETE: ${key}`);
+        return baseRedisHandler.delete(key);
+      },
+      revalidateTag: baseRedisHandler.revalidateTag ? async (tag) => {
+        console.log(`[Cache] Redis REVALIDATE_TAG: ${tag}`);
+        return baseRedisHandler.revalidateTag(tag);
+      } : undefined,
+    };
   }
+
   // Fallback to LRU handler if Redis client is not available.
   // The application will still work, but the cache will be in memory only and not shared.
-  const LRUHandler = createLruHandler();
+  const baseLRUHandler = createLruHandler({
+    maxItemsNumber: 1000,        // Maximum number of cached items (default: 1000)
+    maxItemSizeBytes: 1024 * 1024 * 100, // 100 MB per item (default: 100 MB)
+  });
+
+  // Wrap LRU handler with logging
+  const LRUHandler = {
+    name: baseLRUHandler.name,
+    get: async (key) => {
+      const result = await baseLRUHandler.get(key);
+      if (result) {
+        console.log(`[Cache] LRU HIT: ${key}`);
+      } else {
+        console.log(`[Cache] LRU MISS: ${key}`);
+      }
+      return result;
+    },
+    set: async (key, value) => {
+      console.log(`[Cache] LRU SET: ${key}`);
+      return baseLRUHandler.set(key, value);
+    },
+    delete: async (key) => {
+      console.log(`[Cache] LRU DELETE: ${key}`);
+      return baseLRUHandler.delete(key);
+    },
+    revalidateTag: baseLRUHandler.revalidateTag ? async (tag) => {
+      console.log(`[Cache] LRU REVALIDATE_TAG: ${tag}`);
+      return baseLRUHandler.revalidateTag(tag);
+    } : undefined,
+  };
+
   if(!redisHandler) {
     console.warn("Falling back to LRU handler because Redis client is not available.");
   }
 
+  // Filter out null handlers to prevent cache errors when Redis is unavailable
+  const handlers = [redisHandler, LRUHandler].filter(Boolean);
+
+  // Log which handlers are configured
+  console.info("Cache handlers configured:", handlers.map((h, i) => {
+    if (h === redisHandler) return `[${i}] Redis Handler`;
+    if (h === LRUHandler) return `[${i}] LRU Handler (in-memory)`;
+    return `[${i}] Unknown Handler`;
+  }).join(", "));
+
   return {
-    handlers: [redisHandler, LRUHandler],
+    handlers,
   };
 });
 
