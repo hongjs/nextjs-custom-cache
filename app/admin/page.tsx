@@ -144,24 +144,24 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      <div className="p-8 font-sans max-w-5xl mx-auto">
+      <div className="p-4 sm:p-8 font-sans max-w-5xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border-t-4 border-indigo-500">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border-t-4 border-indigo-500">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             🎛️ Cache Admin Panel
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Interactive UI for testing cache revalidation. Supports both App Router and Pages Router with different API endpoints.
           </p>
         </div>
 
         {/* API Selection */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Select API Endpoint</h2>
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Select API Endpoint</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {/* Universal API */}
-            <label className={`relative flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${
+            <label className={`relative flex items-start p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-all ${
               apiEndpoint === 'universal'
                 ? 'border-indigo-500 bg-indigo-50'
                 : 'border-gray-200 hover:border-indigo-300'
@@ -172,15 +172,15 @@ export default function AdminPage() {
                 value="universal"
                 checked={apiEndpoint === 'universal'}
                 onChange={(e) => setApiEndpoint(e.target.value as ApiEndpoint)}
-                className="mt-1 mr-3"
+                className="mt-1 mr-2 sm:mr-3 shrink-0"
               />
-              <div className="flex-1">
-                <div className="font-semibold text-gray-900 flex items-center gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-sm sm:text-base text-gray-900 flex items-center gap-2 flex-wrap">
                   <span>🌐 Universal API</span>
                   <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">Recommended</span>
                 </div>
-                <code className="text-xs text-gray-600 block mt-1">/api/revalidate</code>
-                <ul className="mt-2 text-sm text-gray-600 space-y-1">
+                <code className="text-xs text-gray-600 block mt-1 break-all">/api/revalidate</code>
+                <ul className="mt-2 text-xs sm:text-sm text-gray-600 space-y-1">
                   <li>✅ App Router (path + tags)</li>
                   <li>✅ Pages Router (path only)</li>
                   <li>✅ No secret required</li>
@@ -190,7 +190,7 @@ export default function AdminPage() {
             </label>
 
             {/* Pages Router API */}
-            <label className={`relative flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${
+            <label className={`relative flex items-start p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition-all ${
               apiEndpoint === 'pages-router'
                 ? 'border-purple-500 bg-purple-50'
                 : 'border-gray-200 hover:border-purple-300'
@@ -201,15 +201,15 @@ export default function AdminPage() {
                 value="pages-router"
                 checked={apiEndpoint === 'pages-router'}
                 onChange={(e) => setApiEndpoint(e.target.value as ApiEndpoint)}
-                className="mt-1 mr-3"
+                className="mt-1 mr-2 sm:mr-3 shrink-0"
               />
-              <div className="flex-1">
-                <div className="font-semibold text-gray-900 flex items-center gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-sm sm:text-base text-gray-900 flex items-center gap-2 flex-wrap">
                   <span>📄 Pages Router API</span>
                   <span className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">Native</span>
                 </div>
-                <code className="text-xs text-gray-600 block mt-1">/api/revalidate-pages</code>
-                <ul className="mt-2 text-sm text-gray-600 space-y-1">
+                <code className="text-xs text-gray-600 block mt-1 break-all">/api/revalidate-pages</code>
+                <ul className="mt-2 text-xs sm:text-sm text-gray-600 space-y-1">
                   <li>✅ Pages Router only (path)</li>
                   <li>❌ No tag support</li>
                   <li>🔒 Requires secret token</li>
@@ -221,8 +221,8 @@ export default function AdminPage() {
         </div>
 
         {/* Main Form */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Manual Revalidation</h2>
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Manual Revalidation</h2>
 
           {/* Secret Token (only for Pages Router API) */}
           {apiEndpoint === 'pages-router' && (

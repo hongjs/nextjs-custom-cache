@@ -73,29 +73,29 @@ export default function StatsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50">
-      <div className="p-8 font-sans max-w-6xl mx-auto">
+      <div className="p-4 sm:p-8 font-sans max-w-6xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border-t-4 border-cyan-500">
-          <div className="flex justify-between items-center">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 border-t-4 border-cyan-500">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                 📊 Cache Statistics
               </h1>
-              <p className="text-gray-600">
+              <p className="text-sm sm:text-base text-gray-600">
                 Real-time monitoring of cache status and performance
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3 flex-wrap">
               <button
                 onClick={fetchStats}
                 disabled={loading}
-                className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:bg-gray-400 transition-colors"
+                className="px-3 sm:px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 disabled:bg-gray-400 transition-colors text-sm sm:text-base"
               >
                 {loading ? '⏳ Loading...' : '🔄 Refresh'}
               </button>
               <button
                 onClick={() => setAutoRefresh(!autoRefresh)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base ${
                   autoRefresh
                     ? 'bg-green-600 text-white hover:bg-green-700'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'

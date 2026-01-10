@@ -93,7 +93,7 @@ getRedisClient().catch(() => {});
 class CacheHandler {
   constructor(options) {
     this.options = options || {};
-    this.keyPrefix = "nextjs-v7:"; // Version bump for Base64+Compression
+    this.keyPrefix = "nextjs:"; // Version bump for Base64+Compression
   }
 
   async get(key, ctx = {}) {
@@ -186,19 +186,21 @@ class CacheHandler {
         try {
             const multi = redisClientInstance.multi();
             const serialized = JSON.stringify(cacheEntry);
-            
+
             // Compress -> Base64
             const compressedBuffer = await gzip(serialized);
             const compressedBase64 = compressedBuffer.toString('base64');
-            
+
             // Expiration
             if (data.lifespan && data.lifespan.expireAt) {
                 // EXAT takes timestamp in seconds
                 multi.set(this.keyPrefix + key, compressedBase64, { EXAT: data.lifespan.expireAt });
+                console.log(`[CacheHandler] Redis SET ${key} with expiry: ${new Date(data.lifespan.expireAt * 1000).toISOString()}`);
             } else {
                 multi.set(this.keyPrefix + key, compressedBase64);
+                console.log(`[CacheHandler] Redis SET ${key} (no expiry)`);
             }
-            
+
             await multi.exec();
             return;
         } catch (err) {

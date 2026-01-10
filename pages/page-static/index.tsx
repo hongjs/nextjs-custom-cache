@@ -17,7 +17,7 @@ interface Props {
 export default function StaticPage({ data, error, generatedAt }: Props) {
   return (
     <PagesLayout>
-      <div className="p-8 max-w-7xl mx-auto">
+      <div className="p-4 sm:p-8 max-w-7xl mx-auto">
         <PageHeader
           title="Pages Router ISR - Incremental Static Regeneration"
           cachingStrategy={`⏱️ ISR with getStaticProps + revalidate: ${REVALIDATE_TIME}s`}
@@ -34,19 +34,19 @@ export default function StaticPage({ data, error, generatedAt }: Props) {
         />
 
         {error && (
-          <div className="text-red-600 bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
-            <h2 className="text-xl font-semibold">Error:</h2>
-            <p>{error}</p>
+          <div className="text-red-600 bg-red-50 p-3 sm:p-4 rounded-lg border border-red-200 mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold">Error:</h2>
+            <p className="text-sm sm:text-base">{error}</p>
           </div>
         )}
 
         {data && data.data && (
           <div>
-            <div className="bg-white p-4 rounded-lg mb-4 shadow">
+            <div className="bg-white p-3 sm:p-4 rounded-lg mb-4 shadow text-sm sm:text-base">
               <strong>Total Items:</strong> {data.data.length}
             </div>
 
-            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {data.data.map((item: Item, index: number) => (
                 <ItemCard
                   key={item.id || index}

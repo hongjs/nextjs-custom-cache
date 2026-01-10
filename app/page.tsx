@@ -198,43 +198,43 @@ export default async function Home() {
       {/* Pod Hostname */}
       <PodHostname hostname={hostname} />
 
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Next.js Custom Cache Handler POC
           </h1>
-          <p className="text-xl text-gray-600 mb-2">
+          <p className="text-lg sm:text-xl text-gray-600 mb-2 px-4">
             Redis-backed distributed caching with graceful LRU fallback
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500 px-4">
             Explore different caching strategies, test cache behavior, and monitor performance
           </p>
         </div>
 
         {/* Quick Links */}
-        <div className="flex justify-center gap-4 mb-12 flex-wrap">
+        <div className="flex justify-center gap-2 sm:gap-4 mb-8 sm:mb-12 flex-wrap px-4">
           <a
             href="#pages"
-            className="px-6 py-2 bg-white border-2 border-blue-500 text-blue-700 rounded-lg hover:bg-blue-50 font-medium transition-colors"
+            className="px-3 sm:px-6 py-2 bg-white border-2 border-blue-500 text-blue-700 rounded-lg hover:bg-blue-50 font-medium transition-colors text-sm sm:text-base"
           >
             📄 Pages
           </a>
           <a
             href="#apis"
-            className="px-6 py-2 bg-white border-2 border-green-500 text-green-700 rounded-lg hover:bg-green-50 font-medium transition-colors"
+            className="px-3 sm:px-6 py-2 bg-white border-2 border-green-500 text-green-700 rounded-lg hover:bg-green-50 font-medium transition-colors text-sm sm:text-base"
           >
             🔌 APIs
           </a>
           <a
             href="#tools"
-            className="px-6 py-2 bg-white border-2 border-purple-500 text-purple-700 rounded-lg hover:bg-purple-50 font-medium transition-colors"
+            className="px-3 sm:px-6 py-2 bg-white border-2 border-purple-500 text-purple-700 rounded-lg hover:bg-purple-50 font-medium transition-colors text-sm sm:text-base"
           >
             🔧 Tools
           </a>
           <a
             href="https://github.com/anthropics/nextjs-custom-cache/blob/main/TESTING.md"
-            className="px-6 py-2 bg-white border-2 border-orange-500 text-orange-700 rounded-lg hover:bg-orange-50 font-medium transition-colors"
+            className="px-3 sm:px-6 py-2 bg-white border-2 border-orange-500 text-orange-700 rounded-lg hover:bg-orange-50 font-medium transition-colors text-sm sm:text-base"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -243,19 +243,19 @@ export default async function Home() {
         </div>
 
         {/* Page Routes Section */}
-        <div id="pages" className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+        <div id="pages" className="mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3 px-2 sm:px-0">
             <span>📄</span>
             Page Routes
           </h2>
 
           {pageRoutes.map((category, idx) => (
-            <div key={idx} className="mb-10">
-              <h3 className="text-xl font-semibold text-gray-700 mb-4 border-l-4 border-blue-500 pl-4">
+            <div key={idx} className="mb-8 sm:mb-10">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4 border-l-4 border-blue-500 pl-3 sm:pl-4 ml-2 sm:ml-0">
                 {category.category}
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {category.routes.map((route) => (
                   <RouteCard key={route.path} route={route} />
                 ))}
@@ -265,13 +265,13 @@ export default async function Home() {
         </div>
 
         {/* API Routes Section */}
-        <div id="apis" className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+        <div id="apis" className="mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3 px-2 sm:px-0">
             <span>🔌</span>
             API Routes
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {apiRoutes.map((api) => (
               <ApiCard key={api.path} api={api} />
             ))}
@@ -279,13 +279,13 @@ export default async function Home() {
         </div>
 
         {/* Testing Tools Section */}
-        <div id="tools" className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+        <div id="tools" className="mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3 px-2 sm:px-0">
             <span>🔧</span>
             Testing & Monitoring Tools
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {testingTools.map((tool) => (
               <ToolCard key={tool.path} tool={tool} />
             ))}
@@ -293,40 +293,40 @@ export default async function Home() {
         </div>
 
         {/* Documentation Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-2xl p-8 text-white">
-          <h2 className="text-3xl font-bold mb-4">📚 Documentation & Resources</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-2xl p-6 sm:p-8 text-white">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">📚 Documentation & Resources</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             <div>
-              <h3 className="font-semibold text-lg mb-2">📋 Testing Guide</h3>
-              <p className="text-blue-100 text-sm mb-3">
+              <h3 className="font-semibold text-base sm:text-lg mb-2">📋 Testing Guide</h3>
+              <p className="text-blue-100 text-xs sm:text-sm mb-3">
                 Comprehensive testing checklist for QA
               </p>
               <a
                 href="/TESTING.md"
-                className="inline-block px-4 py-2 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                className="inline-block px-3 sm:px-4 py-2 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors text-sm"
               >
                 View TESTING.md
               </a>
             </div>
             <div>
-              <h3 className="font-semibold text-lg mb-2">🤖 Automated Tests</h3>
-              <p className="text-blue-100 text-sm mb-3">
+              <h3 className="font-semibold text-base sm:text-lg mb-2">🤖 Automated Tests</h3>
+              <p className="text-blue-100 text-xs sm:text-sm mb-3">
                 Bash script for automated testing
               </p>
-              <code className="block bg-blue-800 bg-opacity-50 rounded p-2 text-xs font-mono mb-2">
+              <code className="block bg-blue-800 bg-opacity-50 rounded p-2 text-xs font-mono mb-2 overflow-x-auto">
                 ./test-cache.sh http://localhost:3000
               </code>
             </div>
             <div>
-              <h3 className="font-semibold text-lg mb-2">📖 README</h3>
-              <p className="text-blue-100 text-sm mb-3">
+              <h3 className="font-semibold text-base sm:text-lg mb-2">📖 README</h3>
+              <p className="text-blue-100 text-xs sm:text-sm mb-3">
                 Full project documentation
               </p>
               <a
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block px-4 py-2 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors"
+                className="inline-block px-3 sm:px-4 py-2 bg-white text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors text-sm"
               >
                 View on GitHub ↗
               </a>

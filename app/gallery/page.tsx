@@ -49,7 +49,7 @@ export default async function GalleryPage() {
 
   return (
     <AppLayout>
-      <div className="p-8 font-sans max-w-7xl mx-auto">
+      <div className="p-4 sm:p-8 font-sans max-w-7xl mx-auto">
         <PageHeader
           title="Image Gallery - Next.js Image Optimization"
           cachingStrategy="🖼️ Image Optimization + ISR (revalidate: 300s)"
@@ -66,12 +66,12 @@ export default async function GalleryPage() {
           variant="purple"
         />
 
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg mb-6 border-2 border-purple-200">
-          <h2 className="text-xl font-bold text-purple-900 mb-3">🧪 Test Checklist for QA:</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded shadow-sm">
-              <h3 className="font-semibold text-purple-800 mb-2">✅ Expected Behavior:</h3>
-              <ul className="text-sm space-y-1 text-gray-700">
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 border-2 border-purple-200">
+          <h2 className="text-lg sm:text-xl font-bold text-purple-900 mb-3">🧪 Test Checklist for QA:</h2>
+          <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
+            <div className="bg-white p-3 sm:p-4 rounded shadow-sm">
+              <h3 className="font-semibold text-sm sm:text-base text-purple-800 mb-2">✅ Expected Behavior:</h3>
+              <ul className="text-xs sm:text-sm space-y-1 text-gray-700">
                 <li>• First load: All images load (may be slow)</li>
                 <li>• Refresh: Images load instantly (cached)</li>
                 <li>• Network tab: See /_next/image?url=...</li>
@@ -79,9 +79,9 @@ export default async function GalleryPage() {
                 <li>• Buffer data handled correctly</li>
               </ul>
             </div>
-            <div className="bg-white p-4 rounded shadow-sm">
-              <h3 className="font-semibold text-red-800 mb-2">❌ Failure Signs:</h3>
-              <ul className="text-sm space-y-1 text-gray-700">
+            <div className="bg-white p-3 sm:p-4 rounded shadow-sm">
+              <h3 className="font-semibold text-sm sm:text-base text-red-800 mb-2">❌ Failure Signs:</h3>
+              <ul className="text-xs sm:text-sm space-y-1 text-gray-700">
                 <li>• Error: &quot;Cannot stringify Buffer&quot;</li>
                 <li>• Images don&apos;t load (broken icons)</li>
                 <li>• Redis errors in logs</li>

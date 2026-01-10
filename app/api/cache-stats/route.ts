@@ -28,8 +28,12 @@ export async function GET() {
     const keys = await client.keys('nextjs:*');
 
     // Separate keys by type
-    const pageKeys = keys.filter(k => k.includes('/page') || k.startsWith('nextjs:/'));
-    const tagKeys = keys.filter(k => k.includes('__revalidated_tags__'));
+    const pageKeys = keys.filter(k =>
+      !k.includes('__revalidated_tags__') &&
+      !k.includes('__sharedTags__') &&
+      (k.includes(':/:') || k.includes('/page') || k.match(/:[a-f0-9]{40,}/))
+    );
+    const tagKeys = keys.filter(k => k.includes('__revalidated_tags__') || k.includes('__sharedTags__'));
     const otherKeys = keys.filter(k => !pageKeys.includes(k) && !tagKeys.includes(k));
 
     // Get memory info
@@ -39,9 +43,10 @@ export async function GET() {
     // Get Redis stats
     const dbSize = await client.dbSize();
 
-    // Sample some key details (first 10 page keys)
+    // Sample some key details (first 10 Next.js keys, excluding internal tag keys)
+    const displayKeys = keys.filter(k => !k.includes('__revalidated_tags__') && !k.includes('__sharedTags__'));
     const keyDetails = await Promise.all(
-      pageKeys.slice(0, 10).map(async (key) => {
+      displayKeys.slice(0, 10).map(async (key) => {
         const ttl = await client!.ttl(key);
         const type = await client!.type(key);
         return {

@@ -33,15 +33,15 @@ export function PageHeader({
 
   return (
     <div>
-      <h1 className="mb-6 text-3xl font-bold">{title}</h1>
+      <h1 className="mb-6 text-2xl md:text-3xl lg:text-4xl font-bold">{title}</h1>
 
-      <div className={`${styles.bg} p-4 rounded-lg mb-4 border ${styles.border}`}>
+      <div className={`${styles.bg} p-4 md:p-6 rounded-lg mb-4 border ${styles.border}`}>
         {cachingStrategy && (
           <>
-            <strong className="block mb-2">{cachingStrategy}</strong>
+            <strong className="block mb-2 text-sm md:text-base">{cachingStrategy}</strong>
           </>
         )}
-        <ul className="space-y-2 text-sm">
+        <ul className="space-y-2 text-xs md:text-sm">
           {description.map((item, index) => (
             <li key={index} className="flex items-start">
               <span className="mr-2">•</span>

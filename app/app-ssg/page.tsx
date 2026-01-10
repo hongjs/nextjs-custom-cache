@@ -11,7 +11,7 @@ export default async function ReadablePage() {
 
   return (
     <AppLayout>
-      <div className="p-8 font-sans max-w-7xl mx-auto">
+      <div className="p-4 sm:p-8 font-sans max-w-7xl mx-auto">
         <PageHeader
           title="App Router SSG List - Static Site Generation"
           cachingStrategy="🏗️ SSG - Static List Page Built at Build Time"
@@ -29,19 +29,19 @@ export default async function ReadablePage() {
         />
 
       {'error' in data && (
-        <div className="text-red-600 bg-red-50 p-4 rounded border border-red-500 mb-4">
-          <h2 className="text-xl font-semibold">Error:</h2>
-          <p>{data.error}</p>
+        <div className="text-red-600 bg-red-50 p-3 sm:p-4 rounded border border-red-500 mb-4">
+          <h2 className="text-lg sm:text-xl font-semibold">Error:</h2>
+          <p className="text-sm sm:text-base">{data.error}</p>
         </div>
       )}
 
       {'data' in data && (
         <div>
-          <div className="bg-white p-4 rounded mb-4 shadow">
+          <div className="bg-white p-3 sm:p-4 rounded mb-4 shadow text-sm sm:text-base">
             <strong>Total Items:</strong> {data.data.length}
           </div>
 
-          <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(350px,1fr))]">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {data.data.map((item: Item, index: number) => (
               <ItemCard
                 key={item.id || index}

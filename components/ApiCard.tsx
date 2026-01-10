@@ -55,27 +55,27 @@ export function ApiCard({ api }: ApiCardProps) {
   const colors = colorClasses[api.color as keyof typeof colorClasses] || colorClasses.blue;
 
   return (
-    <div className={`bg-white rounded-xl shadow-lg border-2 ${colors.border} hover:shadow-xl transition-all duration-300 p-6`}>
+    <div className={`bg-white rounded-xl shadow-lg border-2 ${colors.border} hover:shadow-xl transition-all duration-300 p-4 sm:p-6`}>
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <span className="text-4xl">{api.icon}</span>
-          <div>
-            <h4 className="text-xl font-bold text-gray-900">{api.title}</h4>
-            <p className="text-sm text-gray-600">{api.description}</p>
+      <div className="flex items-start justify-between mb-4 gap-2">
+        <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
+          <span className="text-3xl sm:text-4xl shrink-0">{api.icon}</span>
+          <div className="min-w-0 flex-1">
+            <h4 className="text-lg sm:text-xl font-bold text-gray-900">{api.title}</h4>
+            <p className="text-xs sm:text-sm text-gray-600">{api.description}</p>
           </div>
         </div>
-        <span className={`px-2 py-1 ${colors.badge} text-xs font-bold rounded shrink-0`}>
+        <span className={`px-2 py-1 ${colors.badge} text-xs font-bold rounded shrink-0 self-start`}>
           {api.method}
         </span>
       </div>
 
       {/* Cache Info */}
       <div className="mb-4 flex gap-2 flex-wrap">
-        <span className={`px-3 py-1 ${colors.badge} text-xs font-semibold rounded-full`}>
+        <span className={`px-2 sm:px-3 py-1 ${colors.badge} text-xs font-semibold rounded-full`}>
           {api.cacheType}
         </span>
-        <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-mono rounded">
+        <span className="px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs font-mono rounded">
           {api.cacheBehavior}
         </span>
       </div>
@@ -94,9 +94,9 @@ export function ApiCard({ api }: ApiCardProps) {
       </div>
 
       {/* Test Command */}
-      <div className="bg-gray-900 rounded-lg p-3 mb-4">
+      <div className="bg-gray-900 rounded-lg p-2 sm:p-3 mb-4 overflow-x-auto">
         <p className="text-xs text-gray-400 mb-1">Test command:</p>
-        <code className="text-xs text-green-400 font-mono break-all">
+        <code className="text-xs text-green-400 font-mono break-all whitespace-pre-wrap">
           {api.testCommand}
         </code>
       </div>
@@ -107,7 +107,7 @@ export function ApiCard({ api }: ApiCardProps) {
           href={api.path}
           target="_blank"
           rel="noopener noreferrer"
-          className={`flex-1 px-4 py-2 ${colors.button} text-white text-sm font-medium rounded-lg transition-colors text-center`}
+          className={`flex-1 px-3 sm:px-4 py-2 ${colors.button} text-white text-xs sm:text-sm font-medium rounded-lg transition-colors text-center`}
         >
           Open API ↗
         </a>

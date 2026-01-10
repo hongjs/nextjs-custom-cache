@@ -26,15 +26,15 @@ export function ToolCard({ tool }: ToolCardProps) {
 
   return (
     <Link href={tool.path}>
-      <div className={`bg-white rounded-xl shadow-lg border-2 ${borderColors} hover:shadow-xl transition-all duration-300 p-6 cursor-pointer group h-full`}>
+      <div className={`bg-white rounded-xl shadow-lg border-2 ${borderColors} hover:shadow-xl transition-all duration-300 p-4 sm:p-6 cursor-pointer group h-full`}>
         {/* Header */}
-        <div className="flex items-center gap-3 mb-4">
-          <span className="text-4xl">{tool.icon}</span>
-          <div>
-            <h4 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+        <div className="flex items-start sm:items-center gap-2 sm:gap-3 mb-4">
+          <span className="text-3xl sm:text-4xl shrink-0">{tool.icon}</span>
+          <div className="min-w-0 flex-1">
+            <h4 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
               {tool.title}
             </h4>
-            <p className="text-sm text-gray-600">{tool.description}</p>
+            <p className="text-xs sm:text-sm text-gray-600">{tool.description}</p>
           </div>
         </div>
 
