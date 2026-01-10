@@ -161,6 +161,8 @@ export async function getItemById(id: string, revalidate: number | undefined, ta
     }
 
     const photo = await response.json();
+    photo.url = 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d';
+    photo.thumbnailUrl = 'https://picsum.photos/536/354';
 
     console.log(`[${new Date().toISOString()}] ✓ Fetched photo id=${id}`);
     return { item: photo };

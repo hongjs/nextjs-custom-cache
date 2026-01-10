@@ -27,6 +27,8 @@ export function ItemCard({
         <div className="mb-4">
           <Image
             src={item.thumbnailUrl}
+            width={300}
+            height={200}
             alt={item.title || `Photo ${item.id}`}
             className="w-full h-40 object-cover rounded"
           />

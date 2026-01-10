@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
   if (tags) {
     const tagList = tags.split(',').map((t) => t.trim()).filter(Boolean);
     tagList.forEach((tag) => {
+      // @ts-ignore
       revalidateTag(tag);
       results.push(`Revalidated tag: ${tag}`);
       console.log(`[API] Revalidated tag: ${tag}`);

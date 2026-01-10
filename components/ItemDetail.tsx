@@ -21,6 +21,8 @@ export function ItemDetail({ item }: ItemDetailProps) {
         <div className="mb-6">
           <Image
             src={item.url}
+            width={536}
+            height={354}
             alt={item.title || `Photo ${item.id}`}
             className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
           />
