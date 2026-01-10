@@ -1,0 +1,127 @@
+import { revalidatePath, revalidateTag } from 'next/cache';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  const startTime = Date.now();
+
+  try {
+    // Get parameters from URL search params
+    const searchParams = request.nextUrl.searchParams;
+    const path = searchParams.get('path');
+    const tag = searchParams.get('tag');
+    const tagsParam = searchParams.get('tags');
+    const type = (searchParams.get('type') || 'page') as 'page' | 'layout';
+
+    // Parse tags from comma-separated string
+    const tags = tagsParam ? tagsParam.split(',').map(t => t.trim()).filter(Boolean) : [];
+
+    // Validate input
+    if (!path && !tag && tags.length === 0) {
+      console.log('[Revalidate API] ❌ Error: Missing required parameters');
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required parameters. Provide "path" or "tag" or "tags"',
+          timestamp: new Date().toISOString()
+        },
+        { status: 400 }
+      );
+    }
+
+    const results: any[] = [];
+
+    // Revalidate by path
+    if (path) {
+      try {
+        // type can be 'page' or 'layout'
+        revalidatePath(path, type);
+
+        const result = {
+          type: 'path',
+          path,
+          pathType: type,
+          status: 'success',
+          timestamp: new Date().toISOString(),
+          duration: `${Date.now() - startTime}ms`
+        };
+
+        results.push(result);
+        console.log(`[Revalidate API] ✅ Path revalidated: ${path} (${type})`, result);
+      } catch (error: any) {
+        const result = {
+          type: 'path',
+          path,
+          pathType: type,
+          status: 'error',
+          error: error.message,
+          timestamp: new Date().toISOString(),
+          duration: `${Date.now() - startTime}ms`
+        };
+
+        results.push(result);
+        console.log(`[Revalidate API] ❌ Path revalidation failed: ${path}`, result);
+      }
+    }
+
+    // Revalidate by tag(s)
+    const tagsToRevalidate = tag ? [tag, ...tags] : tags;
+
+    for (const tagName of tagsToRevalidate) {
+      try {
+        revalidateTag(tagName);
+
+        const result = {
+          type: 'tag',
+          tag: tagName,
+          status: 'success',
+          timestamp: new Date().toISOString(),
+          duration: `${Date.now() - startTime}ms`
+        };
+
+        results.push(result);
+        console.log(`[Revalidate API] ✅ Tag revalidated: ${tagName}`, result);
+      } catch (error: any) {
+        const result = {
+          type: 'tag',
+          tag: tagName,
+          status: 'error',
+          error: error.message,
+          timestamp: new Date().toISOString(),
+          duration: `${Date.now() - startTime}ms`
+        };
+
+        results.push(result);
+        console.log(`[Revalidate API] ❌ Tag revalidation failed: ${tagName}`, result);
+      }
+    }
+
+    // Summary logging
+    const successCount = results.filter(r => r.status === 'success').length;
+    const errorCount = results.filter(r => r.status === 'error').length;
+
+    console.log(`[Revalidate API] 📊 Summary: ${successCount} succeeded, ${errorCount} failed (${Date.now() - startTime}ms)`);
+
+    return NextResponse.json({
+      success: errorCount === 0,
+      results,
+      summary: {
+        total: results.length,
+        succeeded: successCount,
+        failed: errorCount,
+        duration: `${Date.now() - startTime}ms`
+      },
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error: any) {
+    console.log('[Revalidate API] ❌ Unexpected error:', error.message);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      },
+      { status: 500 }
+    );
+  }
+}

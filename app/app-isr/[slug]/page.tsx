@@ -10,11 +10,12 @@ interface Props {
 
 // Next.js requires literal value for segment config exports
 export const revalidate = 300;
+export const dynamicParams = true; // Allow caching of dynamic params
+export const dynamic = 'force-static'; // Force static generation with ISR
 
 export default async function AppItemDetailPage({ params }: Props) {
   const { slug } = await params;
   const result = await getItemById(slug, REVALIDATE_TIME);
-  const generatedAt = new Date().toISOString();
 
   return (
     <AppLayout>
@@ -30,7 +31,8 @@ export default async function AppItemDetailPage({ params }: Props) {
             '<strong>Dynamic Routes:</strong> Each unique slug (/:slug) is cached independently',
             '<strong>Scalability:</strong> Unlimited pages - only visited routes are generated and cached',
             '<strong>Use Case:</strong> Perfect for product details, blog posts, or any content with unique identifiers',
-            '<strong>Generated at:</strong> ' + generatedAt
+            '<strong>Note:</strong> This page is cached and will be the same for all requests within the revalidation period',
+            `Date: ${new Date().toISOString()}`
           ]}
           variant="blue"
         />
