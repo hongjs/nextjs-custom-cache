@@ -33,7 +33,14 @@ async function getPhotos(): Promise<Photo[]> {
     throw new Error('Failed to fetch photos');
   }
 
-  return response.json();
+  const photos = await response.json();
+
+  // Replace via.placeholder.com URLs with picsum.photos (more reliable)
+  return photos.map((photo: Photo, index: number) => ({
+    ...photo,
+    url: `https://picsum.photos/seed/${photo.id}/600/400`,
+    thumbnailUrl: `https://picsum.photos/seed/${photo.id}/150/150`
+  }));
 }
 
 export default async function GalleryPage() {
@@ -143,7 +150,7 @@ export default async function GalleryPage() {
             <li>
               <strong>Redis (if available):</strong>
               <ul className="ml-6 mt-1 space-y-1">
-                <li>• <code className="bg-gray-100 px-1 rounded">redis-cli KEYS nextjs-v7:*</code></li>
+                <li>• <code className="bg-gray-100 px-1 rounded">redis-cli KEYS nextjs:*</code></li>
                 <li>• Look for image optimization keys</li>
                 <li>• Verify data is Base64 strings, not raw buffers</li>
               </ul>

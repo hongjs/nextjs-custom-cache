@@ -145,7 +145,8 @@ The application includes multiple examples demonstrating different caching strat
 **API Routes:**
 - `/api/cached-fetch` - API with cached fetch() calls (Data Cache testing)
 - `/api/real-time` - Force-dynamic API (always fresh, never cached)
-- `/api/revalidate` - On-demand revalidation API (path & tag-based)
+- `/api/revalidate` - On-demand revalidation API (path & tag-based, works with both routers)
+- `/api/revalidate-pages` - Pages Router native revalidation (res.revalidate method)
 - `/api/cache-stats` - Cache statistics and Redis monitoring
 
 **Testing & Tools:**
@@ -482,11 +483,14 @@ const result = await getItemById(id: string, revalidate?: number);
 |----------|----------|-------------|---------|
 | `REDIS_URL` | No* | Redis connection string | `redis://localhost:6379` |
 | `KV_URL` | No* | Alternative Redis connection string | `redis://redis-service:6379` |
+| `REVALIDATION_SECRET` | No** | Secret token for Pages Router revalidation API | `your-secret-token-here` |
 | `PORT` | No | Server port (default: 3000, Dockerfile: 4000) | `4000` |
 
 \* Either `REDIS_URL` or `KV_URL` required for Redis caching. Falls back to LRU in-memory if neither is set.
 
-**Note:** No API keys or authentication tokens are required. The application uses the public JSONPlaceholder API which requires no configuration.
+\*\* Required if using `/api/revalidate-pages` endpoint (Pages Router on-demand revalidation).
+
+**Note:** The application uses the public JSONPlaceholder API which requires no authentication.
 
 ## Testing & Quality Assurance
 
@@ -502,6 +506,15 @@ This project includes comprehensive testing tools and documentation:
 - Success criteria checklist
 
 See [TESTING.md](./TESTING.md) for the full testing guide.
+
+**PAGES-ROUTER-REVALIDATION.md** - Pages Router specific guide:
+- How to revalidate Pages Router cache
+- Differences between App Router and Pages Router revalidation
+- Using `/api/revalidate` vs `/api/revalidate-pages`
+- Tag-based vs Path-based revalidation
+- Migration guide from Pages Router to App Router
+
+See [PAGES-ROUTER-REVALIDATION.md](./PAGES-ROUTER-REVALIDATION.md) for the Pages Router revalidation guide.
 
 ### 🔧 Interactive Testing Tools
 
@@ -588,13 +601,13 @@ curl http://localhost:3000/api/cache-stats | jq
 **Redis CLI:**
 ```bash
 # View all Next.js cache keys
-redis-cli KEYS "nextjs-v7:*"
+redis-cli KEYS "nextjs:*"
 
 # Check specific key TTL
-redis-cli TTL "nextjs-v7:/app-isr/page"
+redis-cli TTL "nextjs:/app-isr/page"
 
 # View revalidation tags
-redis-cli HGETALL "nextjs-v7:__revalidated_tags__"
+redis-cli HGETALL "nextjs:__revalidated_tags__"
 
 # Monitor Redis memory
 redis-cli INFO memory | grep used_memory_human

@@ -271,7 +271,7 @@ export default function StatsPage() {
             </div>
 
             <p className="text-xs text-gray-500 mt-3">
-              Showing first 10 page cache keys. For full list, use Redis CLI: <code className="bg-gray-100 px-1 rounded">redis-cli KEYS nextjs-v7:*</code>
+              Showing first 10 page cache keys. For full list, use Redis CLI: <code className="bg-gray-100 px-1 rounded">redis-cli KEYS nextjs:*</code>
             </p>
           </div>
         )}

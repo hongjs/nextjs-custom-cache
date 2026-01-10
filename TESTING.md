@@ -37,7 +37,7 @@
 - ✅ Within 300s: < 50ms (HIT)
 - ✅ After 300s: ~200-500ms (MISS, then cached again)
 - ✅ Server logs: `[Cache] Redis SET` → `[Cache] Redis HIT`
-- ✅ Redis: Key `nextjs-v7:/app-isr/page` exists with TTL
+- ✅ Redis: Key `nextjs:/app-isr/page` exists with TTL
 
 **Failure Signs:**
 - ❌ เวลา generate เปลี่ยนทุกครั้ง → ไม่มี cache
@@ -59,7 +59,7 @@
 **Expected Results:**
 - ✅ แต่ละ slug cached แยกกัน
 - ✅ Tag-based revalidation ทำงาน
-- ✅ Redis keys: `nextjs-v7:/app-isr/1/page`, `nextjs-v7:/app-isr/2/page`
+- ✅ Redis keys: `nextjs:/app-isr/1/page`, `nextjs:/app-isr/2/page`
 
 **Failure Signs:**
 - ❌ ทุก slug ได้ data เดียวกัน
@@ -167,10 +167,10 @@ curl http://localhost:3000/api/cached-fetch
 **Manual Verification:**
 ```bash
 # Check Redis for image keys
-redis-cli KEYS "nextjs-v7:*image*"
+redis-cli KEYS "nextjs:*image*"
 
 # Check if data is Base64 (not raw buffer)
-redis-cli GET "nextjs-v7:<some-image-key>" | head -c 100
+redis-cli GET "nextjs:<some-image-key>" | head -c 100
 # Should see Base64 string, NOT binary garbage
 ```
 
@@ -248,7 +248,7 @@ redis-cli GET "nextjs-v7:<some-image-key>" | head -c 100
 **Expected:**
 - ✅ Log: "Connected to Redis"
 - ✅ Log: `[Cache] Redis SET`, `[Cache] Redis HIT`
-- ✅ `redis-cli KEYS "nextjs-v7:*"` → มี keys
+- ✅ `redis-cli KEYS "nextjs:*"` → มี keys
 
 ---
 
@@ -280,7 +280,7 @@ redis-cli GET "nextjs-v7:<some-image-key>" | head -c 100
 **Steps:**
 ```bash
 # Check if data is compressed
-redis-cli GET "nextjs-v7:/app-isr/page" | wc -c
+redis-cli GET "nextjs:/app-isr/page" | wc -c
 
 # Should be Base64 string (compressed)
 # Raw JSON would be much larger
@@ -317,13 +317,13 @@ redis-cli GET "nextjs-v7:/app-isr/page" | wc -c
 #### 🎯 Test Case: Key Naming Convention
 **Steps:**
 ```bash
-redis-cli KEYS "nextjs-v7:*"
+redis-cli KEYS "nextjs:*"
 ```
 
 **Expected:**
-- ✅ Keys have `nextjs-v7:` prefix
-- ✅ Easy to identify (e.g., `nextjs-v7:/app-isr/page`)
-- ✅ Implicit tags: `nextjs-v7:__revalidated_tags__`
+- ✅ Keys have `nextjs:` prefix
+- ✅ Easy to identify (e.g., `nextjs:/app-isr/page`)
+- ✅ Implicit tags: `nextjs:__revalidated_tags__`
 
 ---
 
@@ -332,7 +332,7 @@ redis-cli KEYS "nextjs-v7:*"
 ```bash
 # Set ISR page with revalidate: 300
 # Check TTL
-redis-cli TTL "nextjs-v7:/app-isr/page"
+redis-cli TTL "nextjs:/app-isr/page"
 # Should show ~300 seconds or less
 ```
 
@@ -365,7 +365,7 @@ redis-cli TTL "nextjs-v7:/app-isr/page"
 
 **Verification:**
 ```bash
-redis-cli HGET "nextjs-v7:__revalidated_tags__" "photos"
+redis-cli HGET "nextjs:__revalidated_tags__" "photos"
 # Should show timestamp
 ```
 

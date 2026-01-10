@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from 'redis';
+import { createClient, RedisClientType } from 'redis';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +16,7 @@ export async function GET() {
     });
   }
 
-  let client;
+  let client: RedisClientType | undefined;
   try {
     client = createClient({ url: redisUrl });
     await Promise.race([
@@ -25,10 +25,10 @@ export async function GET() {
     ]);
 
     // Get all Next.js cache keys
-    const keys = await client.keys('nextjs-v7:*');
+    const keys = await client.keys('nextjs:*');
 
     // Separate keys by type
-    const pageKeys = keys.filter(k => k.includes('/page') || k.startsWith('nextjs-v7:/'));
+    const pageKeys = keys.filter(k => k.includes('/page') || k.startsWith('nextjs:/'));
     const tagKeys = keys.filter(k => k.includes('__revalidated_tags__'));
     const otherKeys = keys.filter(k => !pageKeys.includes(k) && !tagKeys.includes(k));
 
@@ -42,10 +42,10 @@ export async function GET() {
     // Sample some key details (first 10 page keys)
     const keyDetails = await Promise.all(
       pageKeys.slice(0, 10).map(async (key) => {
-        const ttl = await client.ttl(key);
-        const type = await client.type(key);
+        const ttl = await client!.ttl(key);
+        const type = await client!.type(key);
         return {
-          key: key.replace('nextjs-v7:', ''),
+          key: key.replace('nextjs:', ''),
           ttl: ttl > 0 ? `${ttl}s` : ttl === -1 ? 'no expiry' : 'expired',
           type
         };
