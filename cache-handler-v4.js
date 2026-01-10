@@ -1,4 +1,8 @@
 const { createClient } = require('redis');
+const { promisify } = require('util');
+const zlib = require('zlib');
+const gzip = promisify(zlib.gzip);
+const gunzip = promisify(zlib.gunzip);
 
 // --- Helper Functions ---
 
@@ -89,7 +93,7 @@ getRedisClient().catch(() => {});
 class CacheHandler {
   constructor(options) {
     this.options = options || {};
-    this.keyPrefix = "nextjs-v5:";
+    this.keyPrefix = "nextjs-v7:"; // Version bump for Base64+Compression
   }
 
   async get(key, ctx = {}) {
@@ -98,10 +102,15 @@ class CacheHandler {
     // Try Redis first
     if (isRedisAvailable && redisClientInstance?.isReady) {
       try {
+        // Get as string (Base64 encoded compressed data)
         const result = await redisClientInstance.get(this.keyPrefix + key);
         if (!result) return null;
 
-        const cacheValue = JSON.parse(result);
+        // Base64 Decode -> Decompress
+        const compressedBuffer = Buffer.from(result, 'base64');
+        const decompressed = await gunzip(compressedBuffer);
+        const cacheValue = JSON.parse(decompressed.toString());
+
         if (!cacheValue || !cacheValue.value) return null;
 
         // Convert Buffer strings back to Buffer objects
@@ -130,6 +139,7 @@ class CacheHandler {
 
       } catch (err) {
         console.error(`[CacheHandler] Redis get error for ${key}:`, err.message);
+        return null; 
       }
     }
 
@@ -177,17 +187,16 @@ class CacheHandler {
             const multi = redisClientInstance.multi();
             const serialized = JSON.stringify(cacheEntry);
             
+            // Compress -> Base64
+            const compressedBuffer = await gzip(serialized);
+            const compressedBase64 = compressedBuffer.toString('base64');
+            
             // Expiration
             if (data.lifespan && data.lifespan.expireAt) {
                 // EXAT takes timestamp in seconds
-                multi.set(this.keyPrefix + key, serialized, { EXAT: data.lifespan.expireAt });
+                multi.set(this.keyPrefix + key, compressedBase64, { EXAT: data.lifespan.expireAt });
             } else {
-                multi.set(this.keyPrefix + key, serialized);
-            }
-
-            // Optional: Store tags map if needed
-            if (data.tags && data.tags.length > 0) {
-                // multi.hSet(SHARED_TAGS_KEY, key, JSON.stringify(data.tags));
+                multi.set(this.keyPrefix + key, compressedBase64);
             }
             
             await multi.exec();

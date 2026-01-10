@@ -134,12 +134,23 @@ The application includes multiple examples demonstrating different caching strat
 - `/app-isr/1` - ISR detail page for photo #1
 - `/app-ssg` - SSG list page (built at build time)
 - `/app-ssg/1` - SSG detail page with `generateStaticParams`
+- `/gallery` - Image gallery testing Next.js Image optimization and Buffer handling
 
 **Pages Router (Next.js 12):**
 - `/page-server` - SSR list page with `getServerSideProps`
 - `/page-server/1` - SSR detail page
 - `/page-static` - ISR list page with `getStaticProps`
 - `/page-static/1` - ISR detail page with `getStaticPaths`
+
+**API Routes:**
+- `/api/cached-fetch` - API with cached fetch() calls (Data Cache testing)
+- `/api/real-time` - Force-dynamic API (always fresh, never cached)
+- `/api/revalidate` - On-demand revalidation API (path & tag-based)
+- `/api/cache-stats` - Cache statistics and Redis monitoring
+
+**Testing & Tools:**
+- `/admin` - Interactive cache revalidation UI (purge by path or tags)
+- `/stats` - Real-time cache statistics and monitoring dashboard
 
 ### Production Mode
 
@@ -208,13 +219,22 @@ kubectl get pods -l app=nextjs-app
 ├── app/                          # App Router pages
 │   ├── layout.tsx                # Root layout with pod hostname display
 │   ├── page.tsx                  # Dynamic rendering (no cache)
-│   ├── app-isr/                  # ISR examples
-│   └── app-ssg/                  # SSG examples
+│   ├── app-isr/                  # ISR examples (time-based revalidation)
+│   ├── app-ssg/                  # SSG examples (build-time static)
+│   ├── gallery/                  # Image gallery (Buffer/Image optimization test)
+│   ├── admin/                    # Interactive cache revalidation UI
+│   ├── stats/                    # Cache statistics dashboard
+│   └── api/
+│       ├── cached-fetch/         # API with cached fetch() - Data Cache test
+│       ├── real-time/            # Force-dynamic API - No cache test
+│       ├── revalidate/           # On-demand revalidation API
+│       └── cache-stats/          # Cache statistics API
 ├── pages/                        # Pages Router examples
-│   ├── page-server/              # SSR examples
-│   └── page-static/              # Static generation examples
+│   ├── page-server/              # SSR examples (getServerSideProps)
+│   └── page-static/              # ISR examples (getStaticProps)
 ├── components/                   # Reusable components
 │   ├── AppLayout.tsx             # Main layout with navigation
+│   ├── NavigationMenu.tsx        # Side navigation (updated with new routes)
 │   ├── PodHostname.tsx           # Pod hostname banner component
 │   ├── PageHeader.tsx            # Page header with cache info
 │   ├── ItemCard.tsx              # Photo card component
@@ -227,11 +247,16 @@ kubectl get pods -l app=nextjs-app
 │   ├── deployment.yaml           # App deployment (3 replicas)
 │   ├── redis-deployment.yaml    # Redis deployment
 │   └── README.md                 # Detailed K8s deployment guide
-├── cache-handler.js              # Custom Redis cache handler
+├── cache-handler.js              # Custom Redis cache handler (v1)
+├── cache-handler-v2.js           # Custom handler v2
+├── cache-handler-v3.js           # Custom handler v3
+├── cache-handler-v4.js           # Custom handler v4 (with Gzip compression)
 ├── cache-handler-neshca.js       # Neshca cache handler (recommended)
 ├── next.config.ts                # Next.js configuration
 ├── Dockerfile                    # Production Docker image
-└── docker-compose.yml            # Local development setup
+├── docker-compose.yml            # Local development setup
+├── TESTING.md                    # Comprehensive testing guide & checklist
+└── test-cache.sh                 # Automated test script (bash)
 ```
 
 ## Configuration
@@ -462,6 +487,130 @@ const result = await getItemById(id: string, revalidate?: number);
 \* Either `REDIS_URL` or `KV_URL` required for Redis caching. Falls back to LRU in-memory if neither is set.
 
 **Note:** No API keys or authentication tokens are required. The application uses the public JSONPlaceholder API which requires no configuration.
+
+## Testing & Quality Assurance
+
+This project includes comprehensive testing tools and documentation:
+
+### 📋 Test Documentation
+
+**TESTING.md** - Complete testing guide with:
+- Test cases organized by router type (App Router vs Pages Router)
+- Expected behaviors and failure signs
+- Manual testing procedures
+- Multi-pod testing scenarios
+- Success criteria checklist
+
+See [TESTING.md](./TESTING.md) for the full testing guide.
+
+### 🔧 Interactive Testing Tools
+
+**1. Admin Panel (`/admin`)**
+- Web UI for cache revalidation
+- Purge by path (e.g., `/app-isr`)
+- Purge by tags (e.g., `photos, gallery-photos`)
+- Quick action buttons for common operations
+- Live feedback on revalidation success
+
+**2. Cache Stats Dashboard (`/stats`)**
+- Real-time Redis connection status
+- Cache key count and breakdown
+- Memory usage monitoring
+- Key details with TTL information
+- Auto-refresh option (every 5 seconds)
+
+### 🤖 Automated Testing
+
+**test-cache.sh** - Bash script for automated testing:
+
+```bash
+# Make executable
+chmod +x test-cache.sh
+
+# Run tests locally
+./test-cache.sh http://localhost:3000
+
+# Run tests against K8s deployment
+./test-cache.sh https://your-loadbalancer.com
+```
+
+**What it tests:**
+- ✅ API Data Cache (`/api/cached-fetch`)
+- ✅ Force-dynamic behavior (`/api/real-time`)
+- ✅ Page ISR caching (`/app-isr`)
+- ✅ Tag-based revalidation
+- ✅ Image gallery loading
+- ✅ Cache statistics API
+- ✅ Multi-pod distribution (if in K8s)
+
+**Example output:**
+```bash
+═══════════════════════════════════════════════════════════
+  Test 1: API Route with fetch() - Data Cache
+═══════════════════════════════════════════════════════════
+
+ℹ️  INFO: Calling /api/cached-fetch for the first time...
+✅ PASS: Data Cache working - Second request was cached
+
+═══════════════════════════════════════════════════════════
+  Test Summary
+═══════════════════════════════════════════════════════════
+
+Passed: 7
+Failed: 0
+
+🎉 All tests passed!
+```
+
+### 🔍 API Testing Endpoints
+
+Test cache behavior directly via API:
+
+```bash
+# Test cached fetch (Data Cache)
+curl http://localhost:3000/api/cached-fetch | jq
+
+# Test real-time API (No Cache)
+curl http://localhost:3000/api/real-time | jq
+
+# Purge by tag
+curl "http://localhost:3000/api/revalidate?tags=photos" | jq
+
+# Purge by path
+curl "http://localhost:3000/api/revalidate?path=/app-isr" | jq
+
+# Get cache stats
+curl http://localhost:3000/api/cache-stats | jq
+```
+
+### 📊 Monitoring in Production
+
+**Redis CLI:**
+```bash
+# View all Next.js cache keys
+redis-cli KEYS "nextjs-v7:*"
+
+# Check specific key TTL
+redis-cli TTL "nextjs-v7:/app-isr/page"
+
+# View revalidation tags
+redis-cli HGETALL "nextjs-v7:__revalidated_tags__"
+
+# Monitor Redis memory
+redis-cli INFO memory | grep used_memory_human
+```
+
+**Kubernetes Logs:**
+```bash
+# View cache logs from all pods
+kubectl logs -l app=nextjs-app -f | grep "\[Cache\]"
+
+# Check which pods are serving requests
+kubectl logs -l app=nextjs-app --tail=100 | grep "Pod Hostname"
+
+# Monitor cache handler initialization
+kubectl logs -l app=nextjs-app --tail=100 | grep "Cache handlers configured"
+```
 
 ## Troubleshooting
 
