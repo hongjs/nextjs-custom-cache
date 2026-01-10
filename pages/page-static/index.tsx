@@ -3,6 +3,7 @@ import { PageHeader } from '@/components/PageHeader';
 import PagesLayout from '@/components/PagesLayout';
 import { getItems, type Item } from '@/utils/api';
 import { getPodHostname } from '@/utils/hostname';
+import { REVALIDATE_TIME } from '@/utils/constants';
 import { GetStaticProps } from 'next';
 
 
@@ -19,13 +20,13 @@ export default function StaticPage({ data, error, generatedAt }: Props) {
       <div className="p-8 max-w-7xl mx-auto">
         <PageHeader
           title="Pages Router ISR - Incremental Static Regeneration"
-          cachingStrategy="⏱️ ISR with getStaticProps + revalidate: 300"
+          cachingStrategy={`⏱️ ISR with getStaticProps + revalidate: ${REVALIDATE_TIME}s`}
           description={[
-            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">getStaticProps + revalidate: 300</code> - Build-time generation with time-based revalidation',
+            `<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">getStaticProps + revalidate: ${REVALIDATE_TIME}</code> - Build-time generation with time-based revalidation`,
             '<strong>Build Time:</strong> Initially generated during <code class="bg-blue-100 px-1 rounded">npm run build</code>',
             '<strong>First Request:</strong> Served instantly from pre-built static HTML',
-            '<strong>After 60 seconds:</strong> Next request triggers background regeneration, stale cache served',
-            '<strong>Data Freshness:</strong> Maximum 60 seconds stale - automatic background updates',
+            `<strong>After ${REVALIDATE_TIME} seconds:</strong> Next request triggers background regeneration, stale cache served`,
+            `<strong>Data Freshness:</strong> Maximum ${REVALIDATE_TIME} seconds stale - automatic background updates`,
             '<strong>Generated at:</strong> ' + generatedAt,
             '<strong>Use Case:</strong> Content that updates periodically - news sites, product catalogs, blog lists'
           ]}
@@ -68,14 +69,14 @@ export const getStaticProps: GetStaticProps = async () => {
   const hostname = getPodHostname();
 
   try {
-    const data = await getItems(undefined);
+    const data = await getItems(REVALIDATE_TIME);
     return {
       props: {
         data,
         generatedAt: new Date().toISOString(),
         hostname,
       },
-      revalidate: 300,
+      revalidate: REVALIDATE_TIME,
     };
   } catch (error) {
     return {
@@ -85,7 +86,7 @@ export const getStaticProps: GetStaticProps = async () => {
         generatedAt: new Date().toISOString(),
         hostname,
       },
-      revalidate: 300,
+      revalidate: REVALIDATE_TIME,
     };
   }
 };

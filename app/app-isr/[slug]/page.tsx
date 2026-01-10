@@ -2,17 +2,18 @@ import AppLayout from '@/components/AppLayout';
 import { ItemDetail } from '@/components/ItemDetail';
 import { PageHeader } from '@/components/PageHeader';
 import { getItemById } from '@/utils/api';
-
+import { REVALIDATE_TIME } from '@/utils/constants';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
+// Next.js requires literal value for segment config exports
 export const revalidate = 300;
 
 export default async function AppItemDetailPage({ params }: Props) {
   const { slug } = await params;
-  const result = await getItemById(slug, undefined);
+  const result = await getItemById(slug, REVALIDATE_TIME);
   const generatedAt = new Date().toISOString();
 
   return (
@@ -20,12 +21,12 @@ export default async function AppItemDetailPage({ params }: Props) {
       <div className="p-8 max-w-4xl mx-auto">
         <PageHeader
           title="App Router ISR - Incremental Static Regeneration"
-          cachingStrategy="⏱️ ISR with revalidate: 300 seconds (Dynamic Routes)"
+          cachingStrategy={`⏱️ ISR with revalidate: ${REVALIDATE_TIME}s (Dynamic Routes)`}
           description={[
-            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">next: { revalidate: 300 }</code> - On-demand ISR for dynamic routes',
+            `<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">export const revalidate = ${REVALIDATE_TIME}</code> - On-demand ISR for dynamic routes`,
             '<strong>First Visit (New Route):</strong> Page rendered on first request to this specific slug, then cached',
-            '<strong>Subsequent Visits:</strong> Cached version served instantly for 60 seconds',
-            '<strong>Revalidation:</strong> After 60s, background regeneration occurs while serving stale cache',
+            `<strong>Subsequent Visits:</strong> Cached version served instantly for ${REVALIDATE_TIME} seconds`,
+            `<strong>Revalidation:</strong> After ${REVALIDATE_TIME}s, background regeneration occurs while serving stale cache`,
             '<strong>Dynamic Routes:</strong> Each unique slug (/:slug) is cached independently',
             '<strong>Scalability:</strong> Unlimited pages - only visited routes are generated and cached',
             '<strong>Use Case:</strong> Perfect for product details, blog posts, or any content with unique identifiers',

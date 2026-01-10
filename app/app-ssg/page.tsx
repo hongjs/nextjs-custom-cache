@@ -5,8 +5,8 @@ import { getItems, type Item } from '@/utils/api';
 
 
 export default async function ReadablePage() {
-  // Static Site Generation - no cache, built at build time
-  const data = await getItems(undefined);
+  // Static Site Generation - cache at build time for fast builds
+  const data = await getItems(Infinity);
   const generatedAt = new Date().toISOString();
 
   return (

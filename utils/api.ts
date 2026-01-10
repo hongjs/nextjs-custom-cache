@@ -58,11 +58,18 @@ export async function getItems(revalidate: number | undefined): Promise<ItemsRes
     }
 
     let cacheStrategy = '';
-    if(revalidate){
+    if(revalidate === Infinity){
+      // SSG: cache forever
+      config['cache'] = 'force-cache'
+      cacheStrategy = 'force-cache (SSG)';
+    }
+    else if(revalidate && revalidate > 0){
+      // ISR: revalidate after N seconds
       config['next'] = { revalidate: revalidate }
       cacheStrategy = `revalidate: ${revalidate}s`;
     }
     else {
+      // SSR: no cache
       config['cache'] = 'no-store'
       cacheStrategy = 'no-store (no cache)';
     }
@@ -113,11 +120,18 @@ export async function getItemById(id: string, revalidate: number | undefined): P
     }
 
     let cacheStrategy = '';
-    if(revalidate){
+    if(revalidate === Infinity){
+      // SSG: cache forever
+      config['cache'] = 'force-cache'
+      cacheStrategy = 'force-cache (SSG)';
+    }
+    else if(revalidate && revalidate > 0){
+      // ISR: revalidate after N seconds
       config['next'] = { revalidate: revalidate }
       cacheStrategy = `revalidate: ${revalidate}s`;
     }
     else {
+      // SSR: no cache
       config['cache'] = 'no-store'
       cacheStrategy = 'no-store (no cache)';
     }

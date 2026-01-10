@@ -3,6 +3,7 @@ import { PageHeader } from '@/components/PageHeader';
 import PagesLayout from '@/components/PagesLayout';
 import { getItemById, getItems, type Item } from '@/utils/api';
 import { getPodHostname } from '@/utils/hostname';
+import { REVALIDATE_TIME } from '@/utils/constants';
 import { GetStaticPaths, GetStaticProps } from 'next';
 
 interface Props {
@@ -18,13 +19,13 @@ export default function StaticDetailPage({ item, error, generatedAt }: Props) {
       <div className="p-8 max-w-4xl mx-auto">
         <PageHeader
           title="Pages Router ISR - Incremental Static Regeneration"
-          cachingStrategy="⏱️ ISR with getStaticPaths + fallback: 'blocking'"
+          cachingStrategy={`⏱️ ISR with getStaticPaths + revalidate: ${REVALIDATE_TIME}s`}
           description={[
-            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">getStaticProps + getStaticPaths</code> - Hybrid static/on-demand generation',
+            `<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">getStaticProps + getStaticPaths + revalidate: ${REVALIDATE_TIME}</code> - Hybrid static/on-demand generation with revalidation`,
             '<strong>Build Time:</strong> Predefined paths generated during build via <code class="bg-blue-100 px-1 rounded">getStaticPaths</code>',
             '<strong>Unknown Routes:</strong> <code class="bg-blue-100 px-1 rounded">fallback: \'blocking\'</code> - New slugs generated on-demand, then cached',
-            '<strong>First Visit (New Slug):</strong> Rendered on server, then cached permanently',
-            '<strong>Subsequent Visits:</strong> Served instantly from cache',
+            `<strong>First Visit (New Slug):</strong> Rendered on server, then cached with ${REVALIDATE_TIME}s revalidation`,
+            `<strong>After ${REVALIDATE_TIME} seconds:</strong> Next request triggers background regeneration while serving stale cache`,
             '<strong>Generated at:</strong> ' + generatedAt,
             '<strong>Use Case:</strong> Best of both worlds - fast for known routes, scalable for new ones (e-commerce products)'
           ]}
@@ -46,7 +47,7 @@ export default function StaticDetailPage({ item, error, generatedAt }: Props) {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   try {
-    const data = await getItems(300);
+    const data = await getItems(Infinity);
 
     if ('error' in data) {
       console.error('Error in getStaticPaths:', data.error);
@@ -78,7 +79,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   try {
     const slug = params?.slug as string;
-    const result = await getItemById(slug, undefined);
+    const result = await getItemById(slug, REVALIDATE_TIME);
 
     if('error' in result) {
       return {
@@ -97,7 +98,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         generatedAt: new Date().toISOString(),
         hostname,
       },
-      revalidate: 300,
+      revalidate: REVALIDATE_TIME,
     };
   } catch (error) {
     return {

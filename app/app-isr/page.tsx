@@ -2,11 +2,13 @@ import AppLayout from '@/components/AppLayout';
 import { ItemCard } from '@/components/ItemCard';
 import { PageHeader } from '@/components/PageHeader';
 import { getItems, type Item } from '@/utils/api';
+import { REVALIDATE_TIME } from '@/utils/constants';
 
+// Next.js requires literal value for segment config exports
 export const revalidate = 300;
 
 export default async function ReadablePage() {
-  const data = await getItems(undefined);
+  const data = await getItems(REVALIDATE_TIME);
   const generatedAt = new Date().toISOString();
 
   return (
@@ -14,13 +16,13 @@ export default async function ReadablePage() {
       <div className="p-8 font-sans max-w-7xl mx-auto">
         <PageHeader
           title="App Router ISR - Incremental Static Regeneration"
-          cachingStrategy="⏱️ ISR with revalidate: 300 seconds"
+          cachingStrategy={`⏱️ ISR with revalidate: ${REVALIDATE_TIME}s`}
           description={[
-            '<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">next: { revalidate: 300 }</code> - Time-based revalidation',
+            `<strong>Cache Strategy:</strong> <code class="bg-blue-100 px-1 rounded">export const revalidate = ${REVALIDATE_TIME}</code> - Time-based revalidation`,
             '<strong>First Request:</strong> Generated on-demand, rendered on server, then cached',
-            '<strong>Subsequent Requests:</strong> Served from cache instantly (within 60s window)',
-            '<strong>After 60 seconds:</strong> Next request triggers background regeneration while serving stale cache',
-            '<strong>Data Freshness:</strong> Maximum 60 seconds stale - balances freshness with performance',
+            `<strong>Subsequent Requests:</strong> Served from cache instantly (within ${REVALIDATE_TIME}s window)`,
+            `<strong>After ${REVALIDATE_TIME} seconds:</strong> Next request triggers background regeneration while serving stale cache`,
+            `<strong>Data Freshness:</strong> Maximum ${REVALIDATE_TIME} seconds stale - balances freshness with performance`,
             '<strong>Performance:</strong> Fast after first request - cached response served immediately',
             '<strong>Use Case:</strong> Ideal for semi-static content that updates periodically (news, product lists)',
             '<strong>Generated at:</strong> ' + generatedAt
