@@ -43,16 +43,63 @@ export async function GET() {
     // Get Redis stats
     const dbSize = await client.dbSize();
 
-    // Sample some key details (first 10 Next.js keys, excluding internal tag keys)
+    // Sample some key details (first 30 Next.js keys, excluding internal tag keys)
     const displayKeys = keys.filter(k => !k.includes('__revalidated_tags__') && !k.includes('__sharedTags__'));
     const keyDetails = await Promise.all(
-      displayKeys.slice(0, 10).map(async (key) => {
+      displayKeys.slice(0, 30).map(async (key) => {
         const ttl = await client!.ttl(key);
         const type = await client!.type(key);
+
+        // Get value to calculate size and extract metadata
+        let size = 0;
+        let valueInfo: any = {};
+
+        try {
+          const value = await client!.get(key);
+          if (value) {
+            size = Buffer.byteLength(value, 'utf8');
+
+            // Try to parse cache metadata if it's our custom format
+            try {
+              const decompressed = require('zlib').gunzipSync(Buffer.from(value, 'base64'));
+              const parsed = JSON.parse(decompressed.toString());
+
+              if (parsed.lastModified) {
+                valueInfo.lastModified = new Date(parsed.lastModified).toISOString();
+              }
+              if (parsed.tags) {
+                valueInfo.tags = parsed.tags;
+              }
+              if (parsed.lifespan?.expireAt) {
+                valueInfo.expireAt = new Date(parsed.lifespan.expireAt * 1000).toISOString();
+              }
+            } catch (e) {
+              // Not our format or can't parse, skip
+            }
+          }
+        } catch (e) {
+          // Skip if can't get value
+        }
+
+        // Determine key category
+        let category = 'other';
+        const cleanKey = key.replace(/^nextjs(-v7)?:/, '');
+        if (cleanKey.startsWith('/')) {
+          category = 'page';
+        } else if (cleanKey.match(/^[a-f0-9]{40,}$/)) {
+          category = 'data/fetch';
+        }
+
         return {
-          key: key.replace('nextjs:', ''),
-          ttl: ttl > 0 ? `${ttl}s` : ttl === -1 ? 'no expiry' : 'expired',
-          type
+          key: cleanKey,
+          fullKey: key,
+          category,
+          ttl: ttl > 0 ? `${ttl}s (${Math.floor(ttl / 60)}m)` : ttl === -1 ? 'no expiry' : 'expired',
+          ttlSeconds: ttl,
+          type,
+          size: size > 1024 ? `${(size / 1024).toFixed(2)} KB` : `${size} bytes`,
+          sizeBytes: size,
+          ...valueInfo
         };
       })
     );
