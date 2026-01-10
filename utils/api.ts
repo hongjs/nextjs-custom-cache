@@ -50,7 +50,7 @@ export function isItemError(response: ItemResponse): response is ItemErrorRespon
   return 'error' in response;
 }
 
-export async function getItems(revalidate: number | undefined): Promise<ItemsResponse> {
+export async function getItems(revalidate: number | undefined, tags?: string[]): Promise<ItemsResponse> {
   try {
     const url = 'https://jsonplaceholder.typicode.com/photos';
     const config: Partial<RequestInit> = {
@@ -72,6 +72,10 @@ export async function getItems(revalidate: number | undefined): Promise<ItemsRes
       // SSR: no cache
       config['cache'] = 'no-store'
       cacheStrategy = 'no-store (no cache)';
+    }
+
+    if (tags) {
+        config['next'] = { ...config['next'], tags: tags };
     }
 
     const startTime = Date.now();
@@ -98,8 +102,8 @@ export async function getItems(revalidate: number | undefined): Promise<ItemsRes
         id: photo.id,
         albumId: photo.albumId,
         title: photo.title,
-        url: photo.url,
-        thumbnailUrl: photo.thumbnailUrl,
+        url: 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d',
+        thumbnailUrl: 'https://picsum.photos/536/354',
       }))
     };
 
@@ -112,7 +116,7 @@ export async function getItems(revalidate: number | undefined): Promise<ItemsRes
   }
 }
 
-export async function getItemById(id: string, revalidate: number | undefined): Promise<ItemResponse> {
+export async function getItemById(id: string, revalidate: number | undefined, tags?: string[]): Promise<ItemResponse> {
   try {
     const url = `https://jsonplaceholder.typicode.com/photos/${id}`;
     const config: Partial<RequestInit> = {
@@ -134,6 +138,10 @@ export async function getItemById(id: string, revalidate: number | undefined): P
       // SSR: no cache
       config['cache'] = 'no-store'
       cacheStrategy = 'no-store (no cache)';
+    }
+
+    if (tags) {
+        config['next'] = { ...config['next'], tags: tags };
     }
 
     const startTime = Date.now();

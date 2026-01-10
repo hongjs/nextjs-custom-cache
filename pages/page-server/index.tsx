@@ -68,7 +68,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const hostname = getPodHostname();
 
   try {
-    const data = await getItems(undefined);
+    const data = await getItems(undefined, ['photos']);
     return {
       props: {
         data,

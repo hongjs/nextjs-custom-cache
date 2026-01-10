@@ -1,11 +1,11 @@
-import { JsonViewer } from '@/components/JsonViewer';
-import { getItems, type Item } from '@/utils/api';
 import AppLayout from '@/components/AppLayout';
+import { JsonViewer } from '@/components/JsonViewer';
 import { PageHeader } from '@/components/PageHeader';
+import { getItems } from '@/utils/api';
 
 export default async function Home() {
   // Cache: 'no-store
-  const data = await getItems(undefined);
+  const data = await getItems(undefined, ['photos']);
   const generatedAt = new Date().toISOString();
 
   return (

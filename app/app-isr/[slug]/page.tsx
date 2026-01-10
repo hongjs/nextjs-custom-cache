@@ -15,7 +15,7 @@ export const dynamic = 'force-static'; // Force static generation with ISR
 
 export default async function AppItemDetailPage({ params }: Props) {
   const { slug } = await params;
-  const result = await getItemById(slug, REVALIDATE_TIME);
+  const result = await getItemById(slug, REVALIDATE_TIME, ['photo', `photo-${slug}`]);
 
   return (
     <AppLayout>

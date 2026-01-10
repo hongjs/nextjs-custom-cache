@@ -1,4 +1,5 @@
 import type { Item } from '@/utils/api';
+import Image from 'next/image';
 
 interface ItemDetailProps {
   item: Item;
@@ -18,8 +19,8 @@ export function ItemDetail({ item }: ItemDetailProps) {
 
       {item.url && (
         <div className="mb-6">
-          <img
-            src={'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d'}
+          <Image
+            src={item.url}
             alt={item.title || `Photo ${item.id}`}
             className="w-full max-w-2xl mx-auto rounded-lg shadow-md"
           />

@@ -2,8 +2,8 @@ import { ItemCard } from '@/components/ItemCard';
 import { PageHeader } from '@/components/PageHeader';
 import PagesLayout from '@/components/PagesLayout';
 import { getItems, type Item } from '@/utils/api';
-import { getPodHostname } from '@/utils/hostname';
 import { REVALIDATE_TIME } from '@/utils/constants';
+import { getPodHostname } from '@/utils/hostname';
 import { GetStaticProps } from 'next';
 
 
@@ -69,7 +69,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const hostname = getPodHostname();
 
   try {
-    const data = await getItems(REVALIDATE_TIME);
+    const data = await getItems(REVALIDATE_TIME, ['photos']);
     return {
       props: {
         data,

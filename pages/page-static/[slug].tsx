@@ -2,8 +2,8 @@ import { ItemDetail } from '@/components/ItemDetail';
 import { PageHeader } from '@/components/PageHeader';
 import PagesLayout from '@/components/PagesLayout';
 import { getItemById, getItems, type Item } from '@/utils/api';
-import { getPodHostname } from '@/utils/hostname';
 import { REVALIDATE_TIME } from '@/utils/constants';
+import { getPodHostname } from '@/utils/hostname';
 import { GetStaticPaths, GetStaticProps } from 'next';
 
 interface Props {
@@ -47,7 +47,7 @@ export default function StaticDetailPage({ item, error, generatedAt }: Props) {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   try {
-    const data = await getItems(Infinity);
+    const data = await getItems(Infinity, ['photos']);
 
     if ('error' in data) {
       console.error('Error in getStaticPaths:', data.error);
@@ -79,7 +79,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   try {
     const slug = params?.slug as string;
-    const result = await getItemById(slug, REVALIDATE_TIME);
+    const result = await getItemById(slug, REVALIDATE_TIME, ['photo', `photo-${slug}`]);
 
     if('error' in result) {
       return {

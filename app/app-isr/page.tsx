@@ -8,7 +8,7 @@ import { REVALIDATE_TIME } from '@/utils/constants';
 export const revalidate = 300;
 
 export default async function ReadablePage() {
-  const data = await getItems(REVALIDATE_TIME);
+  const data = await getItems(REVALIDATE_TIME, ['photos']);
   const generatedAt = new Date().toISOString();
 
   return (
