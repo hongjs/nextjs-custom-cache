@@ -45,40 +45,67 @@ export async function GET() {
 
     // Sample some key details (first 30 Next.js keys, excluding internal tag keys)
     const displayKeys = keys.filter(k => !k.includes('__revalidated_tags__') && !k.includes('__sharedTags__'));
+    
+    // Fetch all values efficiently to sort by lastModified
+    let allKeyData: { key: string; value: string | null; lastModified: number }[] = [];
+    
+    if (displayKeys.length > 0) {
+      const values = await client.mGet(displayKeys);
+      
+      allKeyData = displayKeys.map((key, index) => {
+        const value = values[index];
+        let lastModified = 0;
+        
+        if (value) {
+          try {
+             const decompressed = require('zlib').gunzipSync(Buffer.from(value, 'base64'));
+             const parsed = JSON.parse(decompressed.toString()) as any;
+             if (parsed && parsed.lastModified) {
+               lastModified = parsed.lastModified;
+             }
+          } catch (e) {
+            // Ignore parse errors, treat as 0
+          }
+        }
+        return { key, value, lastModified };
+      });
+      
+      // Sort by lastModified desc
+      allKeyData.sort((a, b) => b.lastModified - a.lastModified);
+    }
+
     const keyDetails = await Promise.all(
-      displayKeys.slice(0, 30).map(async (key) => {
+      allKeyData
+      .slice(0, 30)
+      .map(async ({ key, value, lastModified }) => {
         const ttl = await client!.ttl(key);
         const type = await client!.type(key);
 
         // Get value to calculate size and extract metadata
         let size = 0;
         let valueInfo: any = {};
-
-        try {
-          const value = await client!.get(key);
-          if (value) {
+        
+        if (value) {
             size = Buffer.byteLength(value, 'utf8');
-
-            // Try to parse cache metadata if it's our custom format
             try {
-              const decompressed = require('zlib').gunzipSync(Buffer.from(value, 'base64'));
-              const parsed = JSON.parse(decompressed.toString());
-
-              if (parsed.lastModified) {
-                valueInfo.lastModified = new Date(parsed.lastModified).toISOString();
-              }
-              if (parsed.tags) {
-                valueInfo.tags = parsed.tags;
-              }
-              if (parsed.lifespan?.expireAt) {
-                valueInfo.expireAt = new Date(parsed.lifespan.expireAt * 1000).toISOString();
-              }
-            } catch (e) {
-              // Not our format or can't parse, skip
-            }
-          }
-        } catch (e) {
-          // Skip if can't get value
+                // We already parsed it once, but let's re-parse to get other fields or just reuse if we want optimizing further.
+                // For simplicity/cleanness, re-parsing here or extracting from the previous step. 
+                // Let's re-parse to be safe and keep logic self-contained per item.
+                const decompressed = require('zlib').gunzipSync(Buffer.from(value, 'base64'));
+                const parsed = JSON.parse(decompressed.toString()) as any;
+                
+                if (parsed && typeof parsed === 'object') {
+                    if (parsed.lastModified) {
+                        valueInfo.lastModified = new Date(parsed.lastModified).toISOString();
+                    }
+                    if (parsed.tags) {
+                        valueInfo.tags = parsed.tags;
+                    }
+                    if (parsed.lifespan?.expireAt) {
+                        valueInfo.expireAt = new Date(parsed.lifespan.expireAt * 1000).toISOString();
+                    }
+                }
+            } catch (e) { }
         }
 
         // Determine key category
